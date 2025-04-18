@@ -138,6 +138,26 @@
       display: block;
     }
 
+    .toast {
+      background-color: #f44336;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      margin-top: 20px;
+      text-align: center;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+      white-space: pre-line;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .dialog-overlay {
       position: fixed;
       top: 0;
@@ -208,6 +228,7 @@
   <div id="itemsContainer"></div>
 
   <button id="downloadAll">Download All</button>
+  <div id="toast" class="toast"></div>
 </main>
 
 <div class="dialog-overlay" id="confirmDialog">
@@ -227,6 +248,7 @@
   const confirmYes = document.getElementById('confirmYes');
   const confirmNo = document.getElementById('confirmNo');
 
+  const toast = document.getElementById('toast');
   let pendingDeleteSection = null;
   let pendingDeleteItem = null;
 
@@ -328,7 +350,25 @@
   });
 
   document.getElementById('downloadAll').addEventListener('click', () => {
-    alert('Download functionality is not yet implemented.');
+    toast.style.display = 'none';
+    toast.textContent = '';
+    let errors = [];
+
+    createdItems.forEach(item => {
+      for (let i = 1; i <= 10; i++) {
+        const input = document.getElementById(`${item}_frame_${i}`);
+        if (!input || !input.files.length) {
+          errors.push(`Error: ${item} - frame_${i} texture not available`);
+        }
+      }
+    });
+
+    if (errors.length) {
+      toast.textContent = errors.join('\n');
+      toast.style.display = 'block';
+    } else {
+      alert('All frames are filled. Proceeding with download...');
+    }
   });
 </script>
 
