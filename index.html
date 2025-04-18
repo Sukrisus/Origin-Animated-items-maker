@@ -1,265 +1,398 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Origin Client - Animated Items Maker</title>
+  <meta charset="UTF-8">
+  <title>ORIGIN CLIENT</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    @font-face {
+      font-family: 'MC Ten Lowercase Alt';
+      src: url('mc-ten-lowercase-alt.ttf');
+    }
+
+    @font-face {
+      font-family: 'Mojang';
+      src: url('Mojang-Regular.ttf');
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      font-family: 'Mojang', sans-serif;
       background: url('file.png') no-repeat center center fixed;
       background-size: cover;
-      backdrop-filter: blur(10px);
-      color: white;
-      min-height: 100vh;
+      overflow-x: hidden;
     }
+
+    #blur {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      backdrop-filter: blur(2px); /* Reduced blur */
+      z-index: -1;
+    }
+
     header {
-      text-align: center;
-      padding: 1em;
-      background: rgba(0, 0, 0, 0.5);
-      font-size: 1.5em;
-    }
-    main {
-      padding: 1em;
-    }
-    select, input[type="text"], input[type="file"] {
+      font-family: 'MC Ten Lowercase Alt', sans-serif;
+      background-color: black;
+      color: white;
       width: 100%;
-      margin: 0.5em 0;
-      padding: 0.5em;
-      background: rgba(0,0,0,0.5);
-      border: none;
-      color: white;
+      top: 0;
+      z-index: 1000;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      line-height: 1.1;
+      position: sticky;
     }
-    button {
-      padding: 0.5em 1em;
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      margin-top: 1em;
-      cursor: pointer;
+
+    header .main-title {
+      font-size: 36px;
+      margin: 0;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
     }
+
+    header .sub-title {
+      font-size: 18px;
+      margin: 0;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    label {
+      color: white;
+      font-weight: bold;
+    }
+
+    #packNameInput, #itemSelector, #packIconInput {
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      width: 100%;
+      max-width: 300px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .selector-container {
+      margin-bottom: 20px;
+    }
+
     .dropdown-section {
-      background: rgba(0,0,0,0.4);
-      border-radius: 0.5em;
-      margin-top: 1em;
-      overflow: hidden;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 20px;
+      position: relative;
+      opacity: 1;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
+
     .dropdown-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 0.8em;
-      background: rgba(0,0,0,0.6);
+      justify-content: space-between;
       cursor: pointer;
     }
-    .dropdown-content {
-      display: none;
-      padding: 1em;
+
+    .dropdown-title {
+      font-size: 18px;
+      text-transform: capitalize;
     }
-    .frame-container {
-      margin-bottom: 1em;
-    }
-    .frame-preview {
-      display: block;
-      max-width: 100px;
-      margin-top: 0.5em;
-    }
-    .remove-img-button {
-      display: block;
-      background: red;
-      margin-top: 0.5em;
-      border-radius: 0.3em;
-    }
+
     .delete-button {
-      background: rgba(255,0,0,0.5);
-      width: 1.5em;
-      height: 1.5em;
-      border-radius: 0.2em;
-      font-size: 1.2em;
-      text-align: center;
-      line-height: 1.5em;
+      background: #ff4d4d;
       color: white;
+      font-size: 16px;
+      width: 20px;
+      height: 20px;
+      text-align: center;
+      padding: 0;
       border: none;
       cursor: pointer;
+      border-radius: 0;
+      font-family: monospace;
+      margin-left: 10px;
+      line-height: 20px;
     }
-    #toast {
+
+    .dropdown-content {
+      margin-top: 10px;
+      display: block;
+    }
+
+    .frame-container {
+      margin-bottom: 10px;
+    }
+
+    .frame-preview {
+      width: 100px;
+      height: 100px;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .remove-img-button {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    #downloadBtn {
+      padding: 10px 20px;
+      font-size: 16px;
+      font-family: 'MC Ten Lowercase Alt', sans-serif;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 30px;
+      display: block;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast {
+      background: red;
+      color: white;
+      padding: 10px;
       position: fixed;
-      bottom: 1em;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(255, 0, 0, 0.8);
-      padding: 0.7em 1.5em;
-      border-radius: 0.5em;
+      border-radius: 6px;
       display: none;
+      max-width: 90vw;
+    }
+
+    .toast button {
+      background: none;
+      border: none;
       color: white;
+      font-size: 16px;
+      float: right;
+      cursor: pointer;
+    }
+
+    .preview-img {
+      max-width: 100px;
+      max-height: 100px;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
-  <header>Origin Client - Animated Items Maker</header>
-  <main>
-    <input type="text" id="packNameInput" placeholder="Enter Pack Name (optional)">
-    <label>Upload pack_icon.png</label>
-    <input type="file" id="packIconInput" accept="image/png">
-    <img id="packIconPreview" style="max-width: 64px; margin-top: 0.5em; display: block;" />
 
-    <label>Add your item</label>
+<div id="blur"></div>
+
+<header>
+  <div class="main-title">ORIGIN CLIENT</div>
+  <div class="sub-title">-animated items maker-</div>
+</header>
+
+<main>
+  <label for="packNameInput">Pack Name (Optional):</label><br>
+  <input type="text" id="packNameInput" placeholder="Pack Name (Optional)"><br>
+
+  <label for="packIconInput">Pack Icon:</label><br>
+  <input type="file" id="packIconInput" accept="image/*"><br>
+  <img id="packIconPreview" class="preview-img"><br><br>
+
+  <div class="selector-container">
+    <label for="itemSelector">Add your item:</label><br>
     <select id="itemSelector">
-      <option value="none">Select an item</option>
-      <option value="diamond_sword">Diamond Sword</option>
-      <option value="netherite_sword">Netherite Sword</option>
-      <option value="totem_of_undying">Totem of Undying</option>
+      <option value="none" selected disabled>Select an item</option>
+      <option value="diamond_sword">diamond_sword</option>
+      <option value="netherite_sword">netherite_sword</option>
+      <option value="totem_of_undying">totem_of_undying</option>
+      <option value="netherite_axe">netherite_axe</option>
+      <option value="diamond_axe">diamond_axe</option>
+      <option value="netherite_pickaxe">netherite_pickaxe</option>
+      <option value="diamond_pickaxe">diamond_pickaxe</option>
+      <option value="apple">apple</option>
+      <option value="apple_golden">apple_golden</option>
     </select>
+  </div>
 
-    <div id="dropdownContainer"></div>
-    <button id="downloadBtn">Download Pack</button>
-    <div id="toast"><span id="toastMsg"></span></div>
-  </main>
+  <div id="dropdownContainer"></div>
 
-  <script type="module">
-    import JSZip from 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm';
+  <button id="downloadBtn">Download</button>
+  <div class="toast" id="toast"><span id="toastMsg"></span> <button onclick="document.getElementById('toast').style.display='none'">×</button></div>
+</main>
 
-    const addedItems = new Set();
-    const itemSelector = document.getElementById('itemSelector');
-    const container = document.getElementById('dropdownContainer');
-    const toast = document.getElementById('toast');
-    const toastMsg = document.getElementById('toastMsg');
-    const packIconInput = document.getElementById('packIconInput');
-    const packIconPreview = document.getElementById('packIconPreview');
+<script>
+  const addedItems = new Set();
+  const itemSelector = document.getElementById('itemSelector');
+  const container = document.getElementById('dropdownContainer');
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toastMsg');
+  const packIconInput = document.getElementById('packIconInput');
+  const packIconPreview = document.getElementById('packIconPreview');
 
-    itemSelector.addEventListener('change', () => {
-      const item = itemSelector.value;
-      if (item === "none" || addedItems.has(item)) return;
-      addedItems.add(item);
+  itemSelector.addEventListener('change', () => {
+    const item = itemSelector.value;
+    if (addedItems.has(item)) return;
+    addedItems.add(item);
 
-      const section = document.createElement('div');
-      section.className = 'dropdown-section';
-      section.setAttribute('data-item', item);
+    const section = document.createElement('div');
+    section.className = 'dropdown-section';
+    section.setAttribute('data-item', item);
 
-      const header = document.createElement('div');
-      header.className = 'dropdown-header';
-      header.innerHTML = `<span>${item}</span>`;
+    const header = document.createElement('div');
+    header.className = 'dropdown-header';
 
-      const closeBtn = document.createElement('button');
-      closeBtn.className = 'delete-button';
-      closeBtn.textContent = '×';
-      closeBtn.onclick = () => {
-        addedItems.delete(item);
-        section.remove();
-      };
-      header.appendChild(closeBtn);
-      section.appendChild(header);
+    const title = document.createElement('div');
+    title.className = 'dropdown-title';
+    title.textContent = item;
 
-      const content = document.createElement('div');
-      content.className = 'dropdown-content';
-      section.appendChild(content);
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'delete-button';
+    closeBtn.textContent = '×';
 
-      if (item === "totem_of_undying") {
-        content.innerHTML += `
-          <label>Upload right_totem.json</label>
-          <input type="file" class="json-upload" data-filename="right_totem.json" accept=".json">
-          <label>Upload left_totem.json</label>
-          <input type="file" class="json-upload" data-filename="left_totem.json" accept=".json">
-        `;
-      } else {
-        content.innerHTML += `
-          <label>Upload ${item}.json</label>
-          <input type="file" class="json-upload" data-filename="${item}.json" accept=".json">
-        `;
-      }
-
-      for (let i = 1; i <= 10; i++) {
-        const frame = document.createElement('div');
-        frame.className = 'frame-container';
-        frame.innerHTML = `
-          <label>Frame ${i}</label>
-          <input type="file" id="${item}_frame_${i}" accept="image/*">
-          <img class="frame-preview" />
-          <button class="remove-img-button">Remove Image</button>
-        `;
-        content.appendChild(frame);
-        const input = frame.querySelector('input');
-        const img = frame.querySelector('img');
-        const btn = frame.querySelector('button');
-        input.onchange = () => {
-          if (input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => img.src = e.target.result;
-            reader.readAsDataURL(input.files[0]);
-          }
-        };
-        btn.onclick = () => {
-          input.value = '';
-          img.src = '';
-        };
-      }
-
-      header.onclick = (e) => {
-        if (e.target !== closeBtn) {
-          content.style.display = content.style.display === 'block' ? 'none' : 'block';
-        }
-      };
-      content.style.display = 'block';
-      container.appendChild(section);
-      itemSelector.value = "none";
-    });
-
-    packIconInput.onchange = () => {
-      const file = packIconInput.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = e => packIconPreview.src = e.target.result;
-        reader.readAsDataURL(file);
-      }
+    closeBtn.onclick = () => {
+      addedItems.delete(item);
+      section.remove();
     };
 
-    function showToast(msg) {
-      toastMsg.textContent = msg;
-      toast.style.display = 'block';
-      setTimeout(() => toast.style.display = 'none', 3000);
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    section.appendChild(header);
+
+    const content = document.createElement('div');
+    content.className = 'dropdown-content';
+
+    for (let i = 1; i <= 10; i++) {
+      const frame = document.createElement('div');
+      frame.className = 'frame-container';
+
+      const label = document.createElement('label');
+      label.textContent = `Frame ${i}`;
+
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.id = `${item}_frame_${i}`;
+
+      const img = document.createElement('img');
+      img.className = 'frame-preview';
+
+      input.onchange = () => {
+        const file = input.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = e => img.src = e.target.result;
+          reader.readAsDataURL(file);
+        }
+      };
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-img-button';
+      removeBtn.textContent = 'Remove Image';
+      removeBtn.onclick = () => {
+        input.value = '';
+        img.src = '';
+      };
+
+      frame.appendChild(label);
+      frame.appendChild(input);
+      frame.appendChild(img);
+      frame.appendChild(removeBtn);
+      content.appendChild(frame);
     }
 
-    document.getElementById('downloadBtn').onclick = async () => {
-      if (addedItems.size === 0) return showToast("error: No items added");
+    section.appendChild(content);
+    container.appendChild(section);
+    itemSelector.value = "none";
+  });
 
-      const zip = new JSZip();
-      const packName = document.getElementById('packNameInput').value.trim() || "origin_animated_textures";
-      const attachables = zip.folder("attachables");
+  packIconInput.onchange = () => {
+    const file = packIconInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => packIconPreview.src = e.target.result;
+      reader.readAsDataURL(file);
+    }
+  };
 
-      if (packIconInput.files[0]) {
-        zip.file("pack_icon.png", packIconInput.files[0]);
-      }
+  function showToast(msg) {
+    toastMsg.textContent = msg;
+    toast.style.display = 'block';
+  }
 
-      for (const item of addedItems) {
-        const section = document.querySelector(`.dropdown-section[data-item="${item}"]`);
-        const jsonInputs = section.querySelectorAll('.json-upload');
+  document.getElementById('downloadBtn').onclick = async () => {
+    if (addedItems.size === 0) return showToast("error:file_empty");
 
-        for (const input of jsonInputs) {
-          if (input.files.length === 0) return showToast(`error: Missing JSON file for ${input.dataset.filename}`);
-          attachables.file(input.dataset.filename, input.files[0]);
+    const JSZip = await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm');
+    const zip = new JSZip.default();
+    const packName = document.getElementById('packNameInput').value.trim() || "origin_animated_textures";
+
+    // Generate UUID for manifest.json
+    const headerUUID = crypto.randomUUID();
+    const moduleUUID = crypto.randomUUID();
+
+    const manifest = {
+      format_version: 2,
+      header: {
+        name: packName,
+        description: "Created Using Origin's animated items maker",
+        uuid: headerUUID,
+        version: [0],
+        min_engine_version: [1, 21, 0],
+        author: "Yami"
+      },
+      modules: [
+        {
+          type: "resources",
+          uuid: moduleUUID,
+          version: [0]
         }
-
-        const short = {
-          diamond_sword: 'ds',
-          netherite_sword: 'ns',
-          totem_of_undying: 't'
-        }[item];
-
-        for (let i = 1; i <= 10; i++) {
-          const input = document.getElementById(`${item}_frame_${i}`);
-          if (!input || !input.files[0]) return showToast(`error: Missing frame ${i} for ${item}`);
-          zip.folder(`textures/${item}`).file(`${short}${i}.png`, input.files[0]);
-        }
-      }
-
-      const blob = await zip.generateAsync({ type: 'blob' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = packName + ".mcpack";
-      a.click();
+      ]
     };
-  </script>
+
+    zip.file('manifest.json', JSON.stringify(manifest, null, 2));
+
+    // Add other files (e.g., textures, icons)
+    const iconFile = document.getElementById('packIconPreview').src;
+    if (iconFile) {
+      const iconBlob = await fetch(iconFile).then(res => res.blob());
+      zip.file('pack_icon.png', iconBlob);
+    }
+
+    // Add attachables and item files
+    addedItems.forEach(item => {
+      const itemFileName = item === 'totem_of_undying' ? 'right_totem.json' : item + '.json';
+      const itemJson = {
+        item: item,
+        texture: `textures/items/${item}.png`,
+        frames: []
+      };
+
+      zip.file(`attachables/${itemFileName}`, JSON.stringify(itemJson, null, 2));
+    });
+
+    // Download the zip
+    zip.generateAsync({ type: "blob" }).then(content => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(content);
+      link.download = `${packName}.mcpack`;
+      link.click();
+    });
+  };
+</script>
+
 </body>
 </html>
