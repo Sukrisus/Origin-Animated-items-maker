@@ -24,6 +24,7 @@
       font-family: 'Mojang', sans-serif;
       background: url('file.png') no-repeat center center fixed;
       background-size: cover;
+      overflow-x: hidden;
     }
 
     #blur {
@@ -31,7 +32,7 @@
       top: 0; left: 0;
       width: 100vw;
       height: 100vh;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(4px); /* Reduced blur */
       z-index: -1;
     }
 
@@ -89,6 +90,8 @@
       padding: 10px;
       margin-bottom: 20px;
       position: relative;
+      opacity: 0;
+      transition: opacity 0.5s ease;
     }
 
     .dropdown-header {
@@ -121,6 +124,7 @@
 
     .dropdown-content {
       margin-top: 10px;
+      display: none;
     }
 
     .frame-container {
@@ -259,6 +263,7 @@
     };
 
     header.onclick = () => {
+      const content = section.querySelector('.dropdown-content');
       content.style.display = content.style.display === 'none' ? 'block' : 'none';
     };
 
@@ -310,6 +315,11 @@
 
     section.appendChild(content);
     container.appendChild(section);
+
+    setTimeout(() => {
+      section.style.opacity = 1;
+    }, 10);
+
     itemSelector.value = "none";
   });
 
@@ -338,6 +348,17 @@
       zip.file('pack_icon.png', packIconInput.files[0]);
     }
 
+    const attachablesFolder = zip.folder('attachables');
+    const jsonFiles = {
+      diamond_sword: 'diamond_sword.json',
+      netherite_sword: 'netherite_sword.json',
+      totem_of_undying: 'totem_of_undying.json',
+      netherite_axe: 'netherite_axe.json',
+      diamond_axe: 'diamond_axe.json',
+      netherite_pickaxe: 'netherite_pickaxe.json',
+      diamond_pickaxe: 'diamond_pickaxe.json',
+    };
+
     for (const item of addedItems) {
       const short = {
         diamond_sword: 'ds',
@@ -348,6 +369,9 @@
         netherite_pickaxe: 'np',
         diamond_pickaxe: 'dp'
       }[item];
+
+      const jsonFile = jsonFiles[item];
+      attachablesFolder.file(jsonFile, `{"item": "${item}"}`);
 
       for (let i = 1; i <= 10; i++) {
         const input = document.getElementById(`${item}_frame_${i}`);
