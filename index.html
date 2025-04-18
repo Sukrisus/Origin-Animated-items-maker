@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ORIGIN CLIENT</title>
+  <style>
+    @font-face {
+      font-family: 'MC Ten Lowercase Alt';
+      src: url('mc-ten-lowercase-alt.ttf') format('truetype');
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+
+    header {
+      font-family: 'MC Ten Lowercase Alt', sans-serif;
+      background-color: black;
+      color: white;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      line-height: 1.1;
+    }
+
+    header .main-title {
+      font-size: 36px;
+      margin: 0;
+    }
+
+    header .sub-title {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    main {
+      margin-top: 110px;
+      padding: 20px;
+    }
+
+    .selector-container {
+      margin-bottom: 30px;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .item-section {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .item-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-transform: capitalize;
+    }
+
+    .item-name-label {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .delete-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .frame-container {
+      margin-bottom: 20px;
+    }
+
+    .frame-label {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .frame-preview {
+      margin-top: 10px;
+      max-width: 200px;
+      max-height: 200px;
+      display: block;
+      border: 1px solid #ccc;
+    }
+
+    .remove-img-button {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 4px 8px;
+      font-size: 12px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type="file"] {
+      margin-top: 5px;
+    }
+
+    #downloadAll {
+      margin: 30px auto 0;
+      padding: 12px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+    }
+
+    .dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .dialog-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      width: 300px;
+    }
+
+    .dialog-box p {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .dialog-box button {
+      padding: 8px 16px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-yes {
+      background-color: #ff4d4d;
+      color: white;
+    }
+
+    .btn-no {
+      background-color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="main-title">ORIGIN CLIENT</div>
+  <div class="sub-title">-animated items maker-</div>
+</header>
+
+<main>
+  <div class="selector-container">
+    <label for="itemSelector"><strong>Add your texture:</strong></label><br>
+    <select id="itemSelector">
+      <option value="none" selected disabled>Select an item</option>
+      <option value="diamond_sword">diamond_sword</option>
+      <option value="netherite_sword">netherite_sword</option>
+      <option value="totem_of_undying">totem_of_undying</option>
+      <option value="netherite_axe">netherite_axe</option>
+      <option value="diamond_axe">diamond_axe</option>
+      <option value="netherite_pickaxe">netherite_pickaxe</option>
+      <option value="diamond_pickaxe">diamond_pickaxe</option>
+    </select>
+  </div>
+
+  <div id="itemsContainer"></div>
+
+  <button id="downloadAll">Download All</button>
+</main>
+
+<div class="dialog-overlay" id="confirmDialog">
+  <div class="dialog-box">
+    <p>Are you sure?</p>
+    <button class="btn-yes" id="confirmYes">Yes</button>
+    <button class="btn-no" id="confirmNo">No</button>
+  </div>
+</div>
+
+<script>
+  const itemsContainer = document.getElementById('itemsContainer');
+  const itemSelector = document.getElementById('itemSelector');
+  const createdItems = new Set();
+
+  const dialog = document.getElementById('confirmDialog');
+  const confirmYes = document.getElementById('confirmYes');
+  const confirmNo = document.getElementById('confirmNo');
+
+  let pendingDeleteSection = null;
+  let pendingDeleteItem = null;
+
+  itemSelector.addEventListener('change', () => {
+    const selectedItem = itemSelector.value;
+    if (createdItems.has(selectedItem)) {
+      itemSelector.value = "none";
+      return;
+    }
+    createdItems.add(selectedItem);
+
+    const section = document.createElement('div');
+    section.className = 'item-section';
+    section.setAttribute('data-item', selectedItem);
+
+    const title = document.createElement('div');
+    title.className = 'item-title';
+    title.textContent = selectedItem.replaceAll('_', ' ');
+    section.appendChild(title);
+
+    const nameLabel = document.createElement('div');
+    nameLabel.className = 'item-name-label';
+    nameLabel.textContent = `Item name: ${selectedItem}`;
+    section.appendChild(nameLabel);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'delete-button';
+    section.appendChild(deleteButton);
+
+    deleteButton.addEventListener('click', () => {
+      pendingDeleteSection = section;
+      pendingDeleteItem = selectedItem;
+      dialog.style.display = 'flex';
+    });
+
+    for (let i = 1; i <= 10; i++) {
+      const container = document.createElement('div');
+      container.className = 'frame-container';
+
+      const label = document.createElement('div');
+      label.className = 'frame-label';
+      label.textContent = `Add Frame ${i}`;
+      container.appendChild(label);
+
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.id = `${selectedItem}_frame_${i}`;
+      container.appendChild(fileInput);
+
+      const imgPreview = document.createElement('img');
+      imgPreview.className = 'frame-preview';
+      imgPreview.id = `${selectedItem}_preview_${i}`;
+      container.appendChild(imgPreview);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-img-button';
+      removeBtn.textContent = 'Remove Image';
+      container.appendChild(removeBtn);
+
+      fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imgPreview.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      removeBtn.addEventListener('click', () => {
+        fileInput.value = '';
+        imgPreview.src = '';
+      });
+
+      section.appendChild(container);
+    }
+
+    itemsContainer.appendChild(section);
+    itemSelector.value = "none";
+  });
+
+  confirmYes.addEventListener('click', () => {
+    if (pendingDeleteSection && pendingDeleteItem) {
+      pendingDeleteSection.remove();
+      createdItems.delete(pendingDeleteItem);
+    }
+    dialog.style.display = 'none';
+    pendingDeleteSection = null;
+    pendingDeleteItem = null;
+  });
+
+  confirmNo.addEventListener('click', () => {
+    dialog.style.display = 'none';
+    pendingDeleteSection = null;
+    pendingDeleteItem = null;
+  });
+
+  document.getElementById('downloadAll').addEventListener('click', () => {
+    alert('Download functionality is not yet implemented.');
+  });
+</script>
+
+</body>
+</html>
