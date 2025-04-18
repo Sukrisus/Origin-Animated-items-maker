@@ -32,7 +32,7 @@
       top: 0; left: 0;
       width: 100vw;
       height: 100vh;
-      backdrop-filter: blur(4px); /* Reduced blur */
+      backdrop-filter: blur(2px); /* Reduced blur */
       z-index: -1;
     }
 
@@ -55,11 +55,13 @@
     header .main-title {
       font-size: 36px;
       margin: 0;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
     }
 
     header .sub-title {
       font-size: 18px;
       margin: 0;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
     }
 
     main {
@@ -77,6 +79,7 @@
       margin-bottom: 10px;
       width: 100%;
       max-width: 300px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
     .selector-container {
@@ -90,8 +93,8 @@
       padding: 10px;
       margin-bottom: 20px;
       position: relative;
-      opacity: 0;
-      transition: opacity 0.5s ease;
+      opacity: 1;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
 
     .dropdown-header {
@@ -124,7 +127,7 @@
 
     .dropdown-content {
       margin-top: 10px;
-      display: none;
+      display: block;
     }
 
     .frame-container {
@@ -160,6 +163,7 @@
       cursor: pointer;
       margin-top: 30px;
       display: block;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
 
     .toast {
@@ -201,8 +205,8 @@
 </header>
 
 <main>
-  <label for="packNameInput">Pack Name:</label><br>
-  <input type="text" id="packNameInput" placeholder="Leave empty for default"><br>
+  <label for="packNameInput">Pack Name (Optional):</label><br>
+  <input type="text" id="packNameInput" placeholder="Pack Name (Optional)"><br>
 
   <label for="packIconInput">Pack Icon:</label><br>
   <input type="file" id="packIconInput" accept="image/*"><br>
@@ -219,6 +223,8 @@
       <option value="diamond_axe">diamond_axe</option>
       <option value="netherite_pickaxe">netherite_pickaxe</option>
       <option value="diamond_pickaxe">diamond_pickaxe</option>
+      <option value="apple">apple</option>
+      <option value="apple_golden">apple_golden</option>
     </select>
   </div>
 
@@ -260,11 +266,6 @@
     closeBtn.onclick = () => {
       addedItems.delete(item);
       section.remove();
-    };
-
-    header.onclick = () => {
-      const content = section.querySelector('.dropdown-content');
-      content.style.display = content.style.display === 'none' ? 'block' : 'none';
     };
 
     header.appendChild(title);
@@ -315,11 +316,6 @@
 
     section.appendChild(content);
     container.appendChild(section);
-
-    setTimeout(() => {
-      section.style.opacity = 1;
-    }, 10);
-
     itemSelector.value = "none";
   });
 
@@ -357,6 +353,8 @@
       diamond_axe: 'diamond_axe.json',
       netherite_pickaxe: 'netherite_pickaxe.json',
       diamond_pickaxe: 'diamond_pickaxe.json',
+      apple: 'apple.json',
+      apple_golden: 'apple_golden.json'
     };
 
     for (const item of addedItems) {
@@ -367,7 +365,9 @@
         netherite_axe: 'na',
         diamond_axe: 'da',
         netherite_pickaxe: 'np',
-        diamond_pickaxe: 'dp'
+        diamond_pickaxe: 'dp',
+        apple: 'a',
+        apple_golden: 'ag'
       }[item];
 
       const jsonFile = jsonFiles[item];
