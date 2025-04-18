@@ -144,13 +144,25 @@
       padding: 12px 20px;
       border-radius: 4px;
       margin-top: 20px;
-      text-align: center;
+      text-align: left;
       max-width: 500px;
       margin-left: auto;
       margin-right: auto;
       display: none;
       animation: fadeIn 0.3s ease-in-out;
       white-space: pre-line;
+      position: relative;
+    }
+
+    .toast button {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
     }
 
     @keyframes fadeIn {
@@ -228,7 +240,10 @@
   <div id="itemsContainer"></div>
 
   <button id="downloadAll">Download All</button>
-  <div id="toast" class="toast"></div>
+  <div id="toast" class="toast">
+    <span id="toastMessage"></span>
+    <button id="closeToast">×</button>
+  </div>
 </main>
 
 <div class="dialog-overlay" id="confirmDialog">
@@ -249,6 +264,9 @@
   const confirmNo = document.getElementById('confirmNo');
 
   const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+  const closeToast = document.getElementById('closeToast');
+
   let pendingDeleteSection = null;
   let pendingDeleteItem = null;
 
@@ -337,6 +355,10 @@
     if (pendingDeleteSection && pendingDeleteItem) {
       pendingDeleteSection.remove();
       createdItems.delete(pendingDeleteItem);
+
+      if (toastMessage.textContent.includes(pendingDeleteItem)) {
+        toast.style.display = 'none';
+      }
     }
     dialog.style.display = 'none';
     pendingDeleteSection = null;
@@ -349,9 +371,13 @@
     pendingDeleteItem = null;
   });
 
+  closeToast.addEventListener('click', () => {
+    toast.style.display = 'none';
+  });
+
   document.getElementById('downloadAll').addEventListener('click', () => {
     toast.style.display = 'none';
-    toast.textContent = '';
+    toastMessage.textContent = '';
     let errors = [];
 
     createdItems.forEach(item => {
@@ -364,7 +390,7 @@
     });
 
     if (errors.length) {
-      toast.textContent = errors.join('\n');
+      toastMessage.textContent = errors.join('\n');
       toast.style.display = 'block';
     } else {
       alert('All frames are filled. Proceeding with download...');
