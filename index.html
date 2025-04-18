@@ -1,410 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ORIGIN CLIENT</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Origin Client - Animated Items Maker</title>
   <style>
-    @font-face {
-      font-family: 'MC Ten Lowercase Alt';
-      src: url('mc-ten-lowercase-alt.ttf');
-    }
-
-    @font-face {
-      font-family: 'Mojang';
-      src: url('Mojang-Regular.ttf');
-    }
-
     * {
-      box-sizing: border-box;
-      transition: all 0.2s ease;
-    }
-
-    body {
       margin: 0;
       padding: 0;
-      font-family: 'Mojang', sans-serif;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
       background: url('file.png') no-repeat center center fixed;
       background-size: cover;
+      backdrop-filter: blur(10px);
+      color: white;
+      min-height: 100vh;
       overflow-x: hidden;
-      color: white;
     }
-
-    #blur {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      backdrop-filter: blur(5px);
-      z-index: -1;
-    }
-
     header {
-      font-family: 'MC Ten Lowercase Alt', sans-serif;
-      background-color: rgba(0, 0, 0, 0.85);
+      text-align: center;
+      padding: 1em;
+      background: rgba(0, 0, 0, 0.5);
+      font-size: 1.5em;
+    }
+    main {
+      padding: 1em;
+    }
+    select, input[type="text"] {
+      margin: 0.5em 0;
+      padding: 0.5em;
+      background: rgba(0,0,0,0.5);
+      border: none;
       color: white;
       width: 100%;
-      height: 80px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
-
-    header .main-title {
-      font-size: 36px;
-      margin: 0;
-      text-shadow: 0 0 10px #000;
-    }
-
-    header .sub-title {
-      font-size: 18px;
-      margin: 0;
-      text-shadow: 0 0 10px #000;
-    }
-
-    main {
-      padding: 30px 20px;
-      max-width: 800px;
-      margin: auto;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
-
-    input[type="text"], select {
-      padding: 10px;
-      font-size: 16px;
-      width: 100%;
-      max-width: 300px;
-      margin-bottom: 20px;
-      border: none;
-      border-radius: 6px;
+    button {
+      padding: 0.5em 1em;
+      margin-top: 1em;
       background: rgba(255,255,255,0.1);
       color: white;
-      backdrop-filter: blur(2px);
+      border: none;
+      border-radius: 0.5em;
+      cursor: pointer;
     }
-
-    input[type="file"] {
-      margin-bottom: 10px;
-    }
-
-    .preview-img {
-      display: block;
-      max-width: 100px;
-      max-height: 100px;
-      border-radius: 6px;
-      margin-top: 5px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    }
-
     .dropdown-section {
-      background-color: rgba(0, 0, 0, 0.6);
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 20px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-top: 1em;
+      background: rgba(0,0,0,0.4);
+      border-radius: 0.5em;
     }
-
     .dropdown-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 0.7em 1em;
       cursor: pointer;
+      background: rgba(0,0,0,0.6);
     }
-
     .dropdown-title {
-      font-size: 18px;
-      text-transform: capitalize;
+      font-weight: bold;
     }
-
-    .delete-button {
-      background: #ff4d4d;
-      border: none;
-      width: 22px;
-      height: 22px;
-      font-size: 16px;
-      color: white;
-      cursor: pointer;
-      font-family: monospace;
-      line-height: 20px;
-    }
-
     .dropdown-content {
-      margin-top: 10px;
-      display: block;
-      animation: fadeIn 0.3s ease;
+      padding: 1em;
+      display: none;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     .frame-container {
-      margin-bottom: 10px;
+      margin-bottom: 1em;
     }
-
     .frame-preview {
-      width: 100px;
-      height: 100px;
-      object-fit: contain;
-      margin-top: 5px;
-      border-radius: 4px;
-    }
-
-    .remove-img-button {
-      background-color: #e74c3c;
-      border: none;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      margin-top: 5px;
-    }
-
-    #downloadBtn {
-      padding: 12px 24px;
-      font-size: 16px;
-      font-family: 'MC Ten Lowercase Alt', sans-serif;
-      background-color: #2ecc71;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-      margin-top: 30px;
       display: block;
-      transition: background 0.3s ease;
+      max-width: 100px;
+      margin-top: 0.5em;
     }
-
-    #downloadBtn:hover {
-      background-color: #27ae60;
+    .remove-img-button {
+      display: block;
+      margin-top: 0.5em;
+      background: red;
+      border-radius: 0.3em;
     }
-
-    .toast {
-      background: #e74c3c;
+    .delete-button {
+      background: rgba(255,0,0,0.5);
       color: white;
-      padding: 10px 15px;
+      font-size: 1.2em;
+      width: 1.5em;
+      height: 1.5em;
+      line-height: 1.5em;
+      text-align: center;
+      border: none;
+      border-radius: 0.2em;
+      cursor: pointer;
+    }
+    #toast {
       position: fixed;
-      bottom: 20px;
+      bottom: 1em;
       left: 50%;
       transform: translateX(-50%);
-      border-radius: 6px;
+      background: rgba(255, 0, 0, 0.8);
+      padding: 0.7em 1.5em;
+      border-radius: 0.5em;
       display: none;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
-
-    .toast button {
-      background: none;
-      border: none;
       color: white;
-      font-size: 16px;
-      margin-left: 10px;
-      cursor: pointer;
+      font-weight: bold;
+    }
+    #packIconPreview {
+      max-width: 64px;
+      margin-top: 0.5em;
+      display: block;
     }
   </style>
 </head>
 <body>
+  <header>Origin Client - Animated Items Maker</header>
+  <main>
+    <input type="text" id="packNameInput" placeholder="Enter Pack Name (optional)">
+    <label for="packIconInput">Upload pack_icon.png</label>
+    <input type="file" id="packIconInput" accept="image/png">
+    <img id="packIconPreview" />
 
-<div id="blur"></div>
+    <label for="itemSelector">Add your item</label>
+    <select id="itemSelector">
+      <option value="none">Select an item</option>
+      <option value="diamond_sword">Diamond Sword</option>
+      <option value="netherite_sword">Netherite Sword</option>
+      <option value="totem_of_undying">Totem of Undying</option>
+      <option value="netherite_axe">Netherite Axe</option>
+      <option value="diamond_axe">Diamond Axe</option>
+      <option value="netherite_pickaxe">Netherite Pickaxe</option>
+      <option value="diamond_pickaxe">Diamond Pickaxe</option>
+      <option value="apple">Apple</option>
+      <option value="apple_golden">Golden Apple</option>
+    </select>
 
-<header>
-  <div class="main-title">ORIGIN CLIENT</div>
-  <div class="sub-title">-animated items maker-</div>
-</header>
+    <div id="dropdownContainer"></div>
+    <button id="downloadBtn">Download Pack</button>
+    <div id="toast"><span id="toastMsg"></span></div>
+  </main>
 
-<main>
-  <label for="packNameInput">Pack Name (Optional):</label>
-  <input type="text" id="packNameInput" placeholder="Pack Name (Optional)">
+  <script>
+    const addedItems = new Set();
+    const itemSelector = document.getElementById('itemSelector');
+    const container = document.getElementById('dropdownContainer');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    const packIconInput = document.getElementById('packIconInput');
+    const packIconPreview = document.getElementById('packIconPreview');
 
-  <label for="packIconInput">Pack Icon:</label>
-  <input type="file" id="packIconInput" accept="image/*">
-  <img id="packIconPreview" class="preview-img">
+    itemSelector.addEventListener('change', () => {
+      const item = itemSelector.value;
+      if (item === "none" || addedItems.has(item)) return;
+      addedItems.add(item);
 
-  <label for="itemSelector">Add your item:</label>
-  <select id="itemSelector">
-    <option value="none" selected disabled>Select an item</option>
-    <option value="diamond_sword">diamond_sword</option>
-    <option value="netherite_sword">netherite_sword</option>
-    <option value="totem_of_undying">totem_of_undying</option>
-    <option value="netherite_axe">netherite_axe</option>
-    <option value="diamond_axe">diamond_axe</option>
-    <option value="netherite_pickaxe">netherite_pickaxe</option>
-    <option value="diamond_pickaxe">diamond_pickaxe</option>
-    <option value="apple">apple</option>
-    <option value="apple_golden">apple_golden</option>
-  </select>
+      const section = document.createElement('div');
+      section.className = 'dropdown-section';
+      section.setAttribute('data-item', item);
 
-  <div id="dropdownContainer"></div>
+      const header = document.createElement('div');
+      header.className = 'dropdown-header';
 
-  <button id="downloadBtn">Download</button>
-  <div class="toast" id="toast"><span id="toastMsg"></span> <button onclick="document.getElementById('toast').style.display='none'">×</button></div>
-</main>
+      const title = document.createElement('div');
+      title.className = 'dropdown-title';
+      title.textContent = item;
 
-<script>
-  const addedItems = new Set();
-  const itemSelector = document.getElementById('itemSelector');
-  const container = document.getElementById('dropdownContainer');
-  const toast = document.getElementById('toast');
-  const toastMsg = document.getElementById('toastMsg');
-  const packIconInput = document.getElementById('packIconInput');
-  const packIconPreview = document.getElementById('packIconPreview');
-
-  itemSelector.addEventListener('change', () => {
-    const item = itemSelector.value;
-    if (addedItems.has(item)) return;
-    addedItems.add(item);
-
-    const section = document.createElement('div');
-    section.className = 'dropdown-section';
-    section.setAttribute('data-item', item);
-
-    const header = document.createElement('div');
-    header.className = 'dropdown-header';
-
-    const title = document.createElement('div');
-    title.className = 'dropdown-title';
-    title.textContent = item;
-
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'delete-button';
-    closeBtn.textContent = '×';
-    closeBtn.onclick = () => {
-      addedItems.delete(item);
-      section.remove();
-    };
-
-    header.appendChild(title);
-    header.appendChild(closeBtn);
-    section.appendChild(header);
-
-    const content = document.createElement('div');
-    content.className = 'dropdown-content';
-
-    for (let i = 1; i <= 10; i++) {
-      const frame = document.createElement('div');
-      frame.className = 'frame-container';
-
-      const label = document.createElement('label');
-      label.textContent = `Frame ${i}`;
-
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.id = `${item}_frame_${i}`;
-
-      const img = document.createElement('img');
-      img.className = 'frame-preview';
-
-      input.onchange = () => {
-        const file = input.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = e => img.src = e.target.result;
-          reader.readAsDataURL(file);
-        }
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'delete-button';
+      closeBtn.textContent = '×';
+      closeBtn.onclick = () => {
+        addedItems.delete(item);
+        section.remove();
       };
 
-      const removeBtn = document.createElement('button');
-      removeBtn.className = 'remove-img-button';
-      removeBtn.textContent = 'Remove Image';
-      removeBtn.onclick = () => {
-        input.value = '';
-        img.src = '';
-      };
+      header.appendChild(title);
+      header.appendChild(closeBtn);
+      section.appendChild(header);
 
-      frame.appendChild(label);
-      frame.appendChild(input);
-      frame.appendChild(img);
-      frame.appendChild(removeBtn);
-      content.appendChild(frame);
-    }
-
-    section.appendChild(content);
-    container.appendChild(section);
-    itemSelector.value = "none";
-  });
-
-  packIconInput.onchange = () => {
-    const file = packIconInput.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => packIconPreview.src = e.target.result;
-      reader.readAsDataURL(file);
-    }
-  };
-
-  function showToast(msg) {
-    toastMsg.textContent = msg;
-    toast.style.display = 'block';
-  }
-
-  document.getElementById('downloadBtn').onclick = async () => {
-    if (addedItems.size === 0) return showToast("error:file_empty");
-
-    const JSZip = await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm');
-    const zip = new JSZip.default();
-    const packName = document.getElementById('packNameInput').value.trim() || "origin_animated_textures";
-
-    if (packIconInput.files[0]) {
-      zip.file('pack_icon.png', packIconInput.files[0]);
-    }
-
-    const attachablesFolder = zip.folder('attachables');
-    const jsonFiles = {
-      diamond_sword: 'diamond_sword.json',
-      netherite_sword: 'netherite_sword.json',
-      totem_of_undying: 'totem_of_undying.json',
-      netherite_axe: 'netherite_axe.json',
-      diamond_axe: 'diamond_axe.json',
-      netherite_pickaxe: 'netherite_pickaxe.json',
-      diamond_pickaxe: 'diamond_pickaxe.json',
-      apple: 'apple.json',
-      apple_golden: 'apple_golden.json'
-    };
-
-    for (const item of addedItems) {
-      const short = {
-        diamond_sword: 'ds',
-        netherite_sword: 'ns',
-        totem_of_undying: 't',
-        netherite_axe: 'na',
-        diamond_axe: 'da',
-        netherite_pickaxe: 'np',
-        diamond_pickaxe: 'dp',
-        apple: 'a',
-        apple_golden: 'ag'
-      }[item];
-
-      const jsonFile = jsonFiles[item];
-      attachablesFolder.file(jsonFile, `{"item": "${item}"}`);
+      const content = document.createElement('div');
+      content.className = 'dropdown-content';
 
       for (let i = 1; i <= 10; i++) {
-        const input = document.getElementById(`${item}_frame_${i}`);
-        if (input && input.files.length > 0) {
-          zip.folder(`textures/${item}`).file(`${short}${i}.png`, input.files[0]);
-        } else {
-          return showToast(`error:${item}:frame_${i} texture not available`);
-        }
+        const frame = document.createElement('div');
+        frame.className = 'frame-container';
+
+        const label = document.createElement('label');
+        label.textContent = `Frame ${i}`;
+
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.id = `${item}_frame_${i}`;
+
+        const img = document.createElement('img');
+        img.className = 'frame-preview';
+
+        input.onchange = () => {
+          const file = input.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = e => img.src = e.target.result;
+            reader.readAsDataURL(file);
+          }
+        };
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-img-button';
+        removeBtn.textContent = 'Remove Image';
+        removeBtn.onclick = () => {
+          input.value = '';
+          img.src = '';
+        };
+
+        frame.appendChild(label);
+        frame.appendChild(input);
+        frame.appendChild(img);
+        frame.appendChild(removeBtn);
+        content.appendChild(frame);
       }
+
+      section.appendChild(content);
+      container.appendChild(section);
+      itemSelector.value = "none";
+
+      header.addEventListener('click', (e) => {
+        if (e.target !== closeBtn) {
+          const isVisible = content.style.display !== 'none';
+          content.style.display = isVisible ? 'none' : 'block';
+        }
+      });
+
+      content.style.display = 'block';
+    });
+
+    packIconInput.onchange = () => {
+      const file = packIconInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => packIconPreview.src = e.target.result;
+        reader.readAsDataURL(file);
+      }
+    };
+
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 3000);
     }
 
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = packName + ".mcpack";
-    a.click();
-  };
-</script>
+    document.getElementById('downloadBtn').onclick = async () => {
+      if (addedItems.size === 0) return showToast("error:file_empty");
 
+      const JSZip = await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm');
+      const zip = new JSZip.default();
+      const packName = document.getElementById('packNameInput').value.trim() || "origin_animated_textures";
+
+      if (packIconInput.files[0]) {
+        zip.file('pack_icon.png', packIconInput.files[0]);
+      }
+
+      const attachablesFolder = zip.folder('attachables');
+      const jsonFiles = {
+        diamond_sword: 'diamond_sword.json',
+        netherite_sword: 'netherite_sword.json',
+        netherite_axe: 'netherite_axe.json',
+        diamond_axe: 'diamond_axe.json',
+        netherite_pickaxe: 'netherite_pickaxe.json',
+        diamond_pickaxe: 'diamond_pickaxe.json',
+        apple: 'apple.json',
+        apple_golden: 'apple_golden.json'
+      };
+
+      for (const item of addedItems) {
+        const short = {
+          diamond_sword: 'ds',
+          netherite_sword: 'ns',
+          totem_of_undying: 't',
+          netherite_axe: 'na',
+          diamond_axe: 'da',
+          netherite_pickaxe: 'np',
+          diamond_pickaxe: 'dp',
+          apple: 'a',
+          apple_golden: 'ag'
+        }[item];
+
+        if (item === "totem_of_undying") {
+          attachablesFolder.file("right_totem.json", `{"item": "${item}"}`);
+          attachablesFolder.file("left_totem.json", `{"item": "${item}"}`);
+        } else {
+          attachablesFolder.file(jsonFiles[item], `{"item": "${item}"}`);
+        }
+
+        for (let i = 1; i <= 10; i++) {
+          const input = document.getElementById(`${item}_frame_${i}`);
+          if (input && input.files.length > 0) {
+            zip.folder(`textures/${item}`).file(`${short}${i}.png`, input.files[0]);
+          } else {
+            return showToast(`error:${item}:frame_${i} texture not available`);
+          }
+        }
+      }
+
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = packName + ".mcpack";
+      a.click();
+    };
+  </script>
 </body>
 </html>
