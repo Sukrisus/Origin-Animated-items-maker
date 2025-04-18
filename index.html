@@ -5,19 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Origin Client - Animated Items Maker</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
+      font-family: Arial, sans-serif;
       background: url('file.png') no-repeat center center fixed;
       background-size: cover;
       backdrop-filter: blur(10px);
       color: white;
       min-height: 100vh;
-      overflow-x: hidden;
     }
     header {
       text-align: center;
@@ -28,43 +23,40 @@
     main {
       padding: 1em;
     }
-    select, input[type="text"] {
+    select, input[type="text"], input[type="file"] {
+      width: 100%;
       margin: 0.5em 0;
       padding: 0.5em;
       background: rgba(0,0,0,0.5);
       border: none;
       color: white;
-      width: 100%;
     }
     button {
       padding: 0.5em 1em;
-      margin-top: 1em;
       background: rgba(255,255,255,0.1);
       color: white;
       border: none;
-      border-radius: 0.5em;
+      border-radius: 8px;
+      margin-top: 1em;
       cursor: pointer;
     }
     .dropdown-section {
-      border: 1px solid rgba(255,255,255,0.1);
-      margin-top: 1em;
       background: rgba(0,0,0,0.4);
       border-radius: 0.5em;
+      margin-top: 1em;
+      overflow: hidden;
     }
     .dropdown-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.7em 1em;
-      cursor: pointer;
+      padding: 0.8em;
       background: rgba(0,0,0,0.6);
-    }
-    .dropdown-title {
-      font-weight: bold;
+      cursor: pointer;
     }
     .dropdown-content {
-      padding: 1em;
       display: none;
+      padding: 1em;
     }
     .frame-container {
       margin-bottom: 1em;
@@ -76,20 +68,20 @@
     }
     .remove-img-button {
       display: block;
-      margin-top: 0.5em;
       background: red;
+      margin-top: 0.5em;
       border-radius: 0.3em;
     }
     .delete-button {
       background: rgba(255,0,0,0.5);
-      color: white;
-      font-size: 1.2em;
       width: 1.5em;
       height: 1.5em;
-      line-height: 1.5em;
-      text-align: center;
-      border: none;
       border-radius: 0.2em;
+      font-size: 1.2em;
+      text-align: center;
+      line-height: 1.5em;
+      color: white;
+      border: none;
       cursor: pointer;
     }
     #toast {
@@ -102,12 +94,6 @@
       border-radius: 0.5em;
       display: none;
       color: white;
-      font-weight: bold;
-    }
-    #packIconPreview {
-      max-width: 64px;
-      margin-top: 0.5em;
-      display: block;
     }
   </style>
 </head>
@@ -115,22 +101,16 @@
   <header>Origin Client - Animated Items Maker</header>
   <main>
     <input type="text" id="packNameInput" placeholder="Enter Pack Name (optional)">
-    <label for="packIconInput">Upload pack_icon.png</label>
+    <label>Upload pack_icon.png</label>
     <input type="file" id="packIconInput" accept="image/png">
-    <img id="packIconPreview" />
+    <img id="packIconPreview" style="max-width: 64px; margin-top: 0.5em; display: block;" />
 
-    <label for="itemSelector">Add your item</label>
+    <label>Add your item</label>
     <select id="itemSelector">
       <option value="none">Select an item</option>
       <option value="diamond_sword">Diamond Sword</option>
       <option value="netherite_sword">Netherite Sword</option>
       <option value="totem_of_undying">Totem of Undying</option>
-      <option value="netherite_axe">Netherite Axe</option>
-      <option value="diamond_axe">Diamond Axe</option>
-      <option value="netherite_pickaxe">Netherite Pickaxe</option>
-      <option value="diamond_pickaxe">Diamond Pickaxe</option>
-      <option value="apple">Apple</option>
-      <option value="apple_golden">Golden Apple</option>
     </select>
 
     <div id="dropdownContainer"></div>
@@ -138,7 +118,9 @@
     <div id="toast"><span id="toastMsg"></span></div>
   </main>
 
-  <script>
+  <script type="module">
+    import JSZip from 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm';
+
     const addedItems = new Set();
     const itemSelector = document.getElementById('itemSelector');
     const container = document.getElementById('dropdownContainer');
@@ -158,10 +140,7 @@
 
       const header = document.createElement('div');
       header.className = 'dropdown-header';
-
-      const title = document.createElement('div');
-      title.className = 'dropdown-title';
-      title.textContent = item;
+      header.innerHTML = `<span>${item}</span>`;
 
       const closeBtn = document.createElement('button');
       closeBtn.className = 'delete-button';
@@ -170,65 +149,61 @@
         addedItems.delete(item);
         section.remove();
       };
-
-      header.appendChild(title);
       header.appendChild(closeBtn);
       section.appendChild(header);
 
       const content = document.createElement('div');
       content.className = 'dropdown-content';
+      section.appendChild(content);
+
+      if (item === "totem_of_undying") {
+        content.innerHTML += `
+          <label>Upload right_totem.json</label>
+          <input type="file" class="json-upload" data-filename="right_totem.json" accept=".json">
+          <label>Upload left_totem.json</label>
+          <input type="file" class="json-upload" data-filename="left_totem.json" accept=".json">
+        `;
+      } else {
+        content.innerHTML += `
+          <label>Upload ${item}.json</label>
+          <input type="file" class="json-upload" data-filename="${item}.json" accept=".json">
+        `;
+      }
 
       for (let i = 1; i <= 10; i++) {
         const frame = document.createElement('div');
         frame.className = 'frame-container';
-
-        const label = document.createElement('label');
-        label.textContent = `Frame ${i}`;
-
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.id = `${item}_frame_${i}`;
-
-        const img = document.createElement('img');
-        img.className = 'frame-preview';
-
+        frame.innerHTML = `
+          <label>Frame ${i}</label>
+          <input type="file" id="${item}_frame_${i}" accept="image/*">
+          <img class="frame-preview" />
+          <button class="remove-img-button">Remove Image</button>
+        `;
+        content.appendChild(frame);
+        const input = frame.querySelector('input');
+        const img = frame.querySelector('img');
+        const btn = frame.querySelector('button');
         input.onchange = () => {
-          const file = input.files[0];
-          if (file) {
+          if (input.files[0]) {
             const reader = new FileReader();
             reader.onload = e => img.src = e.target.result;
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(input.files[0]);
           }
         };
-
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-img-button';
-        removeBtn.textContent = 'Remove Image';
-        removeBtn.onclick = () => {
+        btn.onclick = () => {
           input.value = '';
           img.src = '';
         };
-
-        frame.appendChild(label);
-        frame.appendChild(input);
-        frame.appendChild(img);
-        frame.appendChild(removeBtn);
-        content.appendChild(frame);
       }
 
-      section.appendChild(content);
+      header.onclick = (e) => {
+        if (e.target !== closeBtn) {
+          content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        }
+      };
+      content.style.display = 'block';
       container.appendChild(section);
       itemSelector.value = "none";
-
-      header.addEventListener('click', (e) => {
-        if (e.target !== closeBtn) {
-          const isVisible = content.style.display !== 'none';
-          content.style.display = isVisible ? 'none' : 'block';
-        }
-      });
-
-      content.style.display = 'block';
     });
 
     packIconInput.onchange = () => {
@@ -247,55 +222,35 @@
     }
 
     document.getElementById('downloadBtn').onclick = async () => {
-      if (addedItems.size === 0) return showToast("error:file_empty");
+      if (addedItems.size === 0) return showToast("error: No items added");
 
-      const JSZip = await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm');
-      const zip = new JSZip.default();
+      const zip = new JSZip();
       const packName = document.getElementById('packNameInput').value.trim() || "origin_animated_textures";
+      const attachables = zip.folder("attachables");
 
       if (packIconInput.files[0]) {
-        zip.file('pack_icon.png', packIconInput.files[0]);
+        zip.file("pack_icon.png", packIconInput.files[0]);
       }
 
-      const attachablesFolder = zip.folder('attachables');
-      const jsonFiles = {
-        diamond_sword: 'diamond_sword.json',
-        netherite_sword: 'netherite_sword.json',
-        netherite_axe: 'netherite_axe.json',
-        diamond_axe: 'diamond_axe.json',
-        netherite_pickaxe: 'netherite_pickaxe.json',
-        diamond_pickaxe: 'diamond_pickaxe.json',
-        apple: 'apple.json',
-        apple_golden: 'apple_golden.json'
-      };
-
       for (const item of addedItems) {
+        const section = document.querySelector(`.dropdown-section[data-item="${item}"]`);
+        const jsonInputs = section.querySelectorAll('.json-upload');
+
+        for (const input of jsonInputs) {
+          if (input.files.length === 0) return showToast(`error: Missing JSON file for ${input.dataset.filename}`);
+          attachables.file(input.dataset.filename, input.files[0]);
+        }
+
         const short = {
           diamond_sword: 'ds',
           netherite_sword: 'ns',
-          totem_of_undying: 't',
-          netherite_axe: 'na',
-          diamond_axe: 'da',
-          netherite_pickaxe: 'np',
-          diamond_pickaxe: 'dp',
-          apple: 'a',
-          apple_golden: 'ag'
+          totem_of_undying: 't'
         }[item];
-
-        if (item === "totem_of_undying") {
-          attachablesFolder.file("right_totem.json", `{"item": "${item}"}`);
-          attachablesFolder.file("left_totem.json", `{"item": "${item}"}`);
-        } else {
-          attachablesFolder.file(jsonFiles[item], `{"item": "${item}"}`);
-        }
 
         for (let i = 1; i <= 10; i++) {
           const input = document.getElementById(`${item}_frame_${i}`);
-          if (input && input.files.length > 0) {
-            zip.folder(`textures/${item}`).file(`${short}${i}.png`, input.files[0]);
-          } else {
-            return showToast(`error:${item}:frame_${i} texture not available`);
-          }
+          if (!input || !input.files[0]) return showToast(`error: Missing frame ${i} for ${item}`);
+          zip.folder(`textures/${item}`).file(`${short}${i}.png`, input.files[0]);
         }
       }
 
