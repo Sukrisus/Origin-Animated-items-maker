@@ -8,23 +8,18 @@
       font-family: 'MC Ten Lowercase Alt';
       src: url('mc-ten-lowercase-alt.ttf') format('truetype');
     }
-
     @font-face {
-      font-family: 'Mojang';
+      font-family: 'Mojang Regular';
       src: url('Mojang-Regular.ttf') format('truetype');
     }
-
-    html, body {
+    body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      font-family: 'Mojang', sans-serif;
-      background: url('https://i.pinimg.com/originals/e5/1f/1f/e51f1f6de2b3e00e6d1c32c14422eac1.png') no-repeat center center fixed;
+      font-family: 'Mojang Regular', sans-serif;
+      background: url('file.png') no-repeat center center fixed;
       background-size: cover;
-      backdrop-filter: blur(5px);
-      overflow-x: hidden;
+      backdrop-filter: blur(6px);
     }
-
     header {
       font-family: 'MC Ten Lowercase Alt', sans-serif;
       background-color: black;
@@ -40,33 +35,29 @@
       align-items: center;
       line-height: 1.1;
     }
-
-    header .main-title {
-      font-size: 36px;
-      margin: 0;
-    }
-
-    header .sub-title {
-      font-size: 18px;
-      margin: 0;
-    }
+    header .main-title { font-size: 36px; margin: 0; }
+    header .sub-title { font-size: 18px; margin: 0; }
 
     main {
       margin-top: 100px;
       padding: 20px;
-      box-sizing: border-box;
     }
 
-    .selector-container {
-      margin-bottom: 30px;
-    }
-
-    select, input[type="text"], button {
-      font-family: 'Mojang', sans-serif;
-    }
-
-    label, .item-name-label {
+    label {
       color: white;
+      font-size: 16px;
+    }
+
+    input[type="text"],
+    select,
+    input[type="file"],
+    button {
+      font-family: 'Mojang Regular', sans-serif;
+    }
+
+    .selector-container,
+    .packname-container {
+      margin-bottom: 20px;
     }
 
     select {
@@ -81,7 +72,7 @@
     .item-section {
       margin-top: 30px;
       padding: 15px;
-      background-color: rgba(255,255,255,0.9);
+      background-color: rgba(255, 255, 255, 0.9);
       border: 1px solid #ddd;
       border-radius: 8px;
       position: relative;
@@ -140,18 +131,6 @@
       cursor: pointer;
     }
 
-    input[type="file"] {
-      margin-top: 5px;
-    }
-
-    #packNameInput {
-      padding: 8px;
-      margin-top: 20px;
-      font-size: 16px;
-      max-width: 300px;
-      width: 100%;
-    }
-
     #downloadAll {
       margin: 30px auto 0;
       padding: 12px 20px;
@@ -159,10 +138,10 @@
       color: white;
       border: none;
       font-size: 16px;
+      font-family: 'MC Ten Lowercase Alt', sans-serif;
       border-radius: 5px;
       cursor: pointer;
       display: block;
-      font-family: 'MC Ten Lowercase Alt', sans-serif;
     }
 
     .toast {
@@ -192,79 +171,35 @@
       cursor: pointer;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .dialog-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
-
-    .dialog-box {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      text-align: center;
-      width: 300px;
-    }
-
-    .dialog-box p {
-      margin-bottom: 20px;
-      font-size: 18px;
-    }
-
-    .dialog-box button {
-      padding: 8px 16px;
-      margin: 0 10px;
-      border: none;
-      border-radius: 4px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .btn-yes {
-      background-color: #ff4d4d;
-      color: white;
-    }
-
-    .btn-no {
-      background-color: #ccc;
-    }
-
-    .packname-label {
-      color: white;
-      margin-top: 30px;
+    .pack-icon-preview {
+      max-width: 100px;
+      max-height: 100px;
       display: block;
-      font-size: 16px;
-    }
-
-    @media (max-height: 500px) {
-      body {
-        height: auto;
-      }
+      margin-top: 10px;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
-
 <header>
   <div class="main-title">ORIGIN CLIENT</div>
   <div class="sub-title">-animated items maker-</div>
 </header>
 
 <main>
+  <div class="packname-container">
+    <label for="packName">Pack name:</label><br>
+    <input type="text" id="packName" placeholder="Enter pack name..." style="padding: 8px; max-width: 300px; width: 100%;">
+  </div>
+
+  <div class="pack-icon-container">
+    <label for="packIcon">Pack Icon:</label><br>
+    <input type="file" id="packIcon" accept="image/*">
+    <img id="packIconPreview" class="pack-icon-preview" />
+  </div>
+
   <div class="selector-container">
-    <label for="itemSelector"><strong>Add your item:</strong></label><br>
+    <label for="itemSelector"><strong style="color: white;">Add your item:</strong></label><br>
     <select id="itemSelector">
       <option value="none" selected disabled>Select an item</option>
       <option value="diamond_sword">diamond_sword</option>
@@ -279,9 +214,6 @@
 
   <div id="itemsContainer"></div>
 
-  <label for="packNameInput" class="packname-label">Pack name:</label>
-  <input type="text" id="packNameInput" placeholder="Enter pack name (optional)">
-
   <button id="downloadAll">Download All</button>
 
   <div id="toast" class="toast">
@@ -290,62 +222,63 @@
   </div>
 </main>
 
-<div class="dialog-overlay" id="confirmDialog">
-  <div class="dialog-box">
-    <p>Are you sure?</p>
-    <button class="btn-yes" id="confirmYes">Yes</button>
-    <button class="btn-no" id="confirmNo">No</button>
-  </div>
-</div>
-
 <script>
+  const createdItems = new Set();
   const itemsContainer = document.getElementById('itemsContainer');
   const itemSelector = document.getElementById('itemSelector');
-  const createdItems = new Set();
-
-  const dialog = document.getElementById('confirmDialog');
-  const confirmYes = document.getElementById('confirmYes');
-  const confirmNo = document.getElementById('confirmNo');
-
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toastMessage');
   const closeToast = document.getElementById('closeToast');
+  const packIconInput = document.getElementById('packIcon');
+  const packIconPreview = document.getElementById('packIconPreview');
+  let packIconFile = null;
 
-  let pendingDeleteSection = null;
-  let pendingDeleteItem = null;
+  packIconInput.addEventListener('change', () => {
+    const file = packIconInput.files[0];
+    if (file) {
+      packIconFile = file;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        packIconPreview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  closeToast.addEventListener('click', () => {
+    toast.style.display = 'none';
+  });
 
   itemSelector.addEventListener('change', () => {
-    const selectedItem = itemSelector.value;
-    if (createdItems.has(selectedItem)) {
-      itemSelector.value = "none";
+    const selected = itemSelector.value;
+    if (createdItems.has(selected)) {
+      itemSelector.value = 'none';
       return;
     }
-    createdItems.add(selectedItem);
-
+    createdItems.add(selected);
     const section = document.createElement('div');
     section.className = 'item-section';
-    section.setAttribute('data-item', selectedItem);
+    section.setAttribute('data-item', selected);
 
     const title = document.createElement('div');
     title.className = 'item-title';
-    title.textContent = selectedItem.replaceAll('_', ' ');
+    title.textContent = selected.replaceAll('_', ' ');
     section.appendChild(title);
 
     const nameLabel = document.createElement('div');
     nameLabel.className = 'item-name-label';
-    nameLabel.textContent = `Item name: ${selectedItem}`;
+    nameLabel.textContent = `Item name: ${selected}`;
     section.appendChild(nameLabel);
 
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
-    deleteButton.className = 'delete-button';
-    section.appendChild(deleteButton);
-
-    deleteButton.addEventListener('click', () => {
-      pendingDeleteSection = section;
-      pendingDeleteItem = selectedItem;
-      dialog.style.display = 'flex';
-    });
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.className = 'delete-button';
+    deleteBtn.onclick = () => {
+      section.remove();
+      createdItems.delete(selected);
+      if (toastMessage.textContent.includes(selected)) toast.style.display = 'none';
+    };
+    section.appendChild(deleteBtn);
 
     for (let i = 1; i <= 10; i++) {
       const container = document.createElement('div');
@@ -359,17 +292,21 @@
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = 'image/*';
-      fileInput.id = `${selectedItem}_frame_${i}`;
+      fileInput.id = `${selected}_frame_${i}`;
       container.appendChild(fileInput);
 
       const imgPreview = document.createElement('img');
       imgPreview.className = 'frame-preview';
-      imgPreview.id = `${selectedItem}_preview_${i}`;
+      imgPreview.id = `${selected}_preview_${i}`;
       container.appendChild(imgPreview);
 
       const removeBtn = document.createElement('button');
       removeBtn.className = 'remove-img-button';
       removeBtn.textContent = 'Remove Image';
+      removeBtn.onclick = () => {
+        fileInput.value = '';
+        imgPreview.src = '';
+      };
       container.appendChild(removeBtn);
 
       fileInput.addEventListener('change', function () {
@@ -383,74 +320,67 @@
         }
       });
 
-      removeBtn.addEventListener('click', () => {
-        fileInput.value = '';
-        imgPreview.src = '';
-      });
-
       section.appendChild(container);
     }
 
     itemsContainer.appendChild(section);
-    itemSelector.value = "none";
+    itemSelector.value = 'none';
   });
 
-  confirmYes.addEventListener('click', () => {
-    if (pendingDeleteSection && pendingDeleteItem) {
-      pendingDeleteSection.remove();
-      createdItems.delete(pendingDeleteItem);
-
-      if (toastMessage.textContent.includes(pendingDeleteItem)) {
-        toast.style.display = 'none';
-      }
-    }
-    dialog.style.display = 'none';
-    pendingDeleteSection = null;
-    pendingDeleteItem = null;
-  });
-
-  confirmNo.addEventListener('click', () => {
-    dialog.style.display = 'none';
-    pendingDeleteSection = null;
-    pendingDeleteItem = null;
-  });
-
-  closeToast.addEventListener('click', () => {
-    toast.style.display = 'none';
-  });
-
-  document.getElementById('downloadAll').addEventListener('click', () => {
+  document.getElementById('downloadAll').addEventListener('click', async () => {
     toast.style.display = 'none';
     toastMessage.textContent = '';
+    const JSZip = await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js').then(m => m.default || m);
+    const zip = new JSZip();
+    const packName = document.getElementById('packName').value.trim() || 'origin_animated_textures';
+    const errors = [];
 
     if (createdItems.size === 0) {
-      toastMessage.textContent = 'error:file_empty';
-      toast.style.display = 'block';
+      showToast('error: file_empty');
       return;
     }
 
-    let errors = [];
+    for (const item of createdItems) {
+      const folder = zip.folder(`textures/${item}`);
+      const prefix = item === 'diamond_sword' ? 'ds' :
+                     item === 'netherite_sword' ? 'ns' :
+                     item === 'totem_of_undying' ? 't' :
+                     item === 'netherite_axe' ? 'na' :
+                     item === 'diamond_axe' ? 'da' :
+                     item === 'netherite_pickaxe' ? 'np' :
+                     item === 'diamond_pickaxe' ? 'dp' : 'frame';
 
-    createdItems.forEach(item => {
       for (let i = 1; i <= 10; i++) {
         const input = document.getElementById(`${item}_frame_${i}`);
         if (!input || !input.files.length) {
-          errors.push(`error:${item}:frame_${i} texture not available`);
+          errors.push(`error: ${item}: frame_${i} texture not available`);
+        } else {
+          folder.file(`${prefix}${i}.png`, input.files[0]);
         }
       }
-    });
+    }
+
+    if (packIconFile) {
+      zip.file('pack_icon.png', packIconFile);
+    }
 
     if (errors.length) {
-      toastMessage.textContent = errors.join('\n');
-      toast.style.display = 'block';
-    } else {
-      // Replace with zip generation logic
-      const packNameInput = document.getElementById('packNameInput');
-      const finalName = (packNameInput.value || 'origin_animated_textures') + '.mcpack';
-      alert('Download initiated: ' + finalName);
+      showToast(errors.join('\n'));
+      return;
     }
-  });
-</script>
 
+    zip.generateAsync({ type: 'blob' }).then(content => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(content);
+      link.download = `${packName}.mcpack`;
+      link.click();
+    });
+  });
+
+  function showToast(msg) {
+    toastMessage.textContent = msg;
+    toast.style.display = 'block';
+  }
+</script>
 </body>
 </html>
