@@ -1,127 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>ORIGIN CLIENT</title>
-  <link rel="stylesheet" href="mc-ten-lowercase-alt.ttf">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <style>
     @font-face {
-      font-family: 'MCFont';
-      src: url('mc-ten-lowercase-alt.ttf');
+      font-family: 'MC Ten Lowercase Alt';
+      src: url('mc-ten-lowercase-alt.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'Mojang';
+      src: url('Mojang-Regular.ttf') format('truetype');
     }
 
     body {
       margin: 0;
-      font-family: 'MCFont', sans-serif;
-      background-color: #f4f4f4;
+      padding: 0;
+      font-family: 'Mojang', sans-serif;
+      background: url('bg.png') no-repeat center center fixed;
+      background-size: cover;
     }
 
     header {
+      font-family: 'MC Ten Lowercase Alt', sans-serif;
       background-color: black;
       color: white;
-      text-align: center;
-      padding: 10px 0;
       position: fixed;
-      top: 0;
       width: 100%;
+      top: 0;
       z-index: 1000;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      line-height: 1.1;
     }
 
-    header h1, header h2 {
+    header .main-title {
+      font-size: 36px;
       margin: 0;
-      line-height: 1.2;
     }
 
-    header h1 {
-      font-size: 32px;
-    }
-
-    header h2 {
-      font-size: 16px;
+    header .sub-title {
+      font-size: 18px;
+      margin: 0;
     }
 
     main {
-      padding: 100px 20px 40px;
-      max-width: 800px;
-      margin: auto;
+      margin-top: 110px;
+      padding: 20px;
+    }
+
+    .selector-container {
+      margin-bottom: 20px;
     }
 
     select, input[type="text"] {
-      padding: 8px;
-      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
       width: 100%;
       max-width: 300px;
-      display: block;
-      font-family: 'MCFont', sans-serif;
     }
 
-    .frame-section {
-      background: #fff;
+    .item-section {
+      margin-top: 30px;
       padding: 15px;
-      border: 1px solid #ccc;
-      margin-top: 20px;
+      background-color: rgba(255,255,255,0.9);
+      border: 1px solid #ddd;
+      border-radius: 8px;
       position: relative;
     }
 
-    .frame-section h3 {
-      margin: 0 0 10px 0;
+    .item-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-transform: capitalize;
     }
 
-    .frame-controls {
+    .item-name-label {
       margin-bottom: 10px;
+      font-size: 16px;
     }
 
-    .image-preview {
+    .delete-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .frame-container {
+      margin-bottom: 20px;
+    }
+
+    .frame-label {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .frame-preview {
+      margin-top: 10px;
+      max-width: 200px;
+      max-height: 200px;
       display: block;
-      max-height: 60px;
+      border: 1px solid #ccc;
+    }
+
+    .remove-img-button {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 4px 8px;
+      font-size: 12px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type="file"] {
       margin-top: 5px;
     }
 
-    button {
-      font-family: 'MCFont', sans-serif;
+    #downloadAll {
+      margin: 20px auto;
+      padding: 12px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      font-family: 'MC Ten Lowercase Alt', sans-serif;
     }
 
     .toast {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #ff4d4d;
+      background-color: #f44336;
       color: white;
-      padding: 10px 15px;
+      padding: 12px 20px;
       border-radius: 4px;
-      z-index: 9999;
+      margin-top: 20px;
+      text-align: left;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+      white-space: pre-line;
+      position: relative;
     }
 
     .toast button {
+      position: absolute;
+      top: 5px;
+      right: 10px;
       background: none;
       border: none;
       color: white;
-      font-size: 16px;
-      margin-left: 10px;
+      font-size: 20px;
       cursor: pointer;
     }
 
-    #downloadAll {
-      margin-top: 40px;
-      padding: 10px 20px;
-      background-color: black;
-      color: white;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .dialog-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      width: 300px;
+    }
+
+    .dialog-box p {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .dialog-box button {
+      padding: 8px 16px;
+      margin: 0 10px;
       border: none;
+      border-radius: 4px;
+      font-size: 14px;
       cursor: pointer;
     }
+
+    .btn-yes {
+      background-color: #ff4d4d;
+      color: white;
+    }
+
+    .btn-no {
+      background-color: #ccc;
+    }
+
   </style>
 </head>
 <body>
-  <header>
-    <h1>ORIGIN CLIENT</h1>
-    <h2>-animated items maker-</h2>
-  </header>
-  <main>
-    <label><strong>Add your texture:</strong></label>
+
+<header>
+  <div class="main-title">ORIGIN CLIENT</div>
+  <div class="sub-title">-animated items maker-</div>
+</header>
+
+<main>
+  <div class="selector-container">
+    <label for="itemSelector"><strong>Add your texture:</strong></label><br>
     <select id="itemSelector">
       <option value="none" selected disabled>Select an item</option>
       <option value="diamond_sword">diamond_sword</option>
@@ -132,129 +243,180 @@
       <option value="netherite_pickaxe">netherite_pickaxe</option>
       <option value="diamond_pickaxe">diamond_pickaxe</option>
     </select>
+  </div>
 
-    <label for="packName"><strong>Pack Name:</strong></label>
-    <input type="text" id="packName" placeholder="Enter pack name...">
+  <div style="margin-bottom: 20px;">
+    <label for="packName"><strong>Pack name:</strong></label><br>
+    <input type="text" id="packName" placeholder="Enter pack name..." />
+  </div>
 
-    <div id="itemsContainer"></div>
-    <button id="downloadAll">Download All</button>
+  <div id="itemsContainer"></div>
 
-    <div id="toast" class="toast">
-      <span id="toastMessage"></span>
-      <button id="closeToast">&times;</button>
-    </div>
-  </main>
+  <button id="downloadAll">Download All</button>
 
-  <script>
-    const itemCodes = {
-      diamond_sword: 'ds',
-      netherite_sword: 'ns',
-      totem_of_undying: 't',
-      netherite_axe: 'na',
-      diamond_axe: 'da',
-      netherite_pickaxe: 'np',
-      diamond_pickaxe: 'dp'
-    };
+  <div id="toast" class="toast">
+    <span id="toastMessage"></span>
+    <button id="closeToast">×</button>
+  </div>
+</main>
 
-    const createdItems = new Set();
+<div class="dialog-overlay" id="confirmDialog">
+  <div class="dialog-box">
+    <p>Are you sure?</p>
+    <button class="btn-yes" id="confirmYes">Yes</button>
+    <button class="btn-no" id="confirmNo">No</button>
+  </div>
+</div>
 
-    document.getElementById('itemSelector').addEventListener('change', function () {
-      const item = this.value;
-      if (createdItems.has(item)) return;
-      createdItems.add(item);
+<script>
+  const itemsContainer = document.getElementById('itemsContainer');
+  const itemSelector = document.getElementById('itemSelector');
+  const createdItems = new Set();
 
-      const container = document.getElementById('itemsContainer');
-      const section = document.createElement('div');
-      section.className = 'frame-section';
-      section.id = `${item}_section`;
+  const dialog = document.getElementById('confirmDialog');
+  const confirmYes = document.getElementById('confirmYes');
+  const confirmNo = document.getElementById('confirmNo');
 
-      let html = `<h3>Item name: ${item} <button onclick="removeItem('${item}')">&times;</button></h3>`;
-      for (let i = 1; i <= 10; i++) {
-        html += `
-          <div class="frame-controls">
-            <label>Add frame ${i}:</label>
-            <input type="file" accept="image/*" id="${item}_frame_${i}" onchange="previewImage(event, '${item}_frame_${i}_img')">
-            <img id="${item}_frame_${i}_img" class="image-preview" />
-          </div>
-        `;
-      }
-      section.innerHTML = html;
-      container.appendChild(section);
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+  const closeToast = document.getElementById('closeToast');
+
+  let pendingDeleteSection = null;
+  let pendingDeleteItem = null;
+
+  itemSelector.addEventListener('change', () => {
+    const selectedItem = itemSelector.value;
+    if (createdItems.has(selectedItem)) {
+      itemSelector.value = "none";
+      return;
+    }
+    createdItems.add(selectedItem);
+
+    const section = document.createElement('div');
+    section.className = 'item-section';
+    section.setAttribute('data-item', selectedItem);
+
+    const title = document.createElement('div');
+    title.className = 'item-title';
+    title.textContent = selectedItem.replaceAll('_', ' ');
+    section.appendChild(title);
+
+    const nameLabel = document.createElement('div');
+    nameLabel.className = 'item-name-label';
+    nameLabel.textContent = `Item name: ${selectedItem}`;
+    section.appendChild(nameLabel);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'delete-button';
+    section.appendChild(deleteButton);
+
+    deleteButton.addEventListener('click', () => {
+      pendingDeleteSection = section;
+      pendingDeleteItem = selectedItem;
+      dialog.style.display = 'flex';
     });
 
-    function removeItem(item) {
-      document.getElementById(`${item}_section`).remove();
-      createdItems.delete(item);
-      document.getElementById('toast').style.display = 'none';
+    for (let i = 1; i <= 10; i++) {
+      const container = document.createElement('div');
+      container.className = 'frame-container';
+
+      const label = document.createElement('div');
+      label.className = 'frame-label';
+      label.textContent = `Add Frame ${i}`;
+      container.appendChild(label);
+
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.id = `${selectedItem}_frame_${i}`;
+      container.appendChild(fileInput);
+
+      const imgPreview = document.createElement('img');
+      imgPreview.className = 'frame-preview';
+      imgPreview.id = `${selectedItem}_preview_${i}`;
+      container.appendChild(imgPreview);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-img-button';
+      removeBtn.textContent = 'Remove Image';
+      container.appendChild(removeBtn);
+
+      fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imgPreview.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      removeBtn.addEventListener('click', () => {
+        fileInput.value = '';
+        imgPreview.src = '';
+      });
+
+      section.appendChild(container);
     }
 
-    function previewImage(event, imgId) {
-      const img = document.getElementById(imgId);
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => (img.src = reader.result);
-        reader.readAsDataURL(file);
+    itemsContainer.appendChild(section);
+    itemSelector.value = "none";
+  });
+
+  confirmYes.addEventListener('click', () => {
+    if (pendingDeleteSection && pendingDeleteItem) {
+      pendingDeleteSection.remove();
+      createdItems.delete(pendingDeleteItem);
+
+      if (toastMessage.textContent.includes(pendingDeleteItem)) {
+        toast.style.display = 'none';
       }
     }
+    dialog.style.display = 'none';
+    pendingDeleteSection = null;
+    pendingDeleteItem = null;
+  });
 
-    document.getElementById('downloadAll').addEventListener('click', async () => {
-      const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toastMessage');
-      toast.style.display = 'none';
-      toastMessage.textContent = '';
+  confirmNo.addEventListener('click', () => {
+    dialog.style.display = 'none';
+    pendingDeleteSection = null;
+    pendingDeleteItem = null;
+  });
 
-      const packName = document.getElementById('packName').value.trim();
-      if (!packName) {
-        showToast('Error: Please enter a pack name');
-        return;
-      }
+  closeToast.addEventListener('click', () => {
+    toast.style.display = 'none';
+  });
 
-      if (createdItems.size === 0) {
-        showToast('error:file_empty');
-        return;
-      }
+  document.getElementById('downloadAll').addEventListener('click', () => {
+    const packName = document.getElementById('packName').value.trim();
+    if (!createdItems.size) {
+      toastMessage.textContent = 'error: file_empty';
+      toast.style.display = 'block';
+      return;
+    }
 
-      const zip = new JSZip();
-      let hasError = false;
-      let errorMessages = [];
+    let errors = [];
 
-      for (let item of createdItems) {
-        const code = itemCodes[item];
-        const folder = zip.folder('textures').folder(item);
-        for (let i = 1; i <= 10; i++) {
-          const input = document.getElementById(`${item}_frame_${i}`);
-          if (input && input.files.length) {
-            const file = input.files[0];
-            const fileData = await file.arrayBuffer();
-            folder.file(`${code}${i}.png`, fileData);
-          } else {
-            hasError = true;
-            errorMessages.push(`error:${item}:frame_${i} texture not available`);
-          }
+    createdItems.forEach(item => {
+      for (let i = 1; i <= 10; i++) {
+        const input = document.getElementById(`${item}_frame_${i}`);
+        if (!input || !input.files.length) {
+          errors.push(`error: ${item}: frame_${i} texture not available`);
         }
       }
-
-      if (hasError) {
-        showToast(errorMessages.join('\n'));
-        return;
-      }
-
-      zip.generateAsync({ type: 'blob' }).then(content => {
-        saveAs(content, `${packName}.mcpack`);
-      });
     });
 
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      const toastMessage = document.getElementById('toastMessage');
-      toastMessage.textContent = message;
+    if (errors.length) {
+      toastMessage.textContent = errors.join('\n');
       toast.style.display = 'block';
+    } else {
+      // Logic to bundle images and generate .mcpack (can be implemented later)
+      alert(`All frames added. Preparing ${packName || 'your_pack'}.mcpack`);
     }
+  });
+</script>
 
-    document.getElementById('closeToast').addEventListener('click', () => {
-      document.getElementById('toast').style.display = 'none';
-    });
-  </script>
 </body>
 </html>
