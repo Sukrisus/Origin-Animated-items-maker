@@ -377,11 +377,11 @@
       const itemFileName = item === 'totem_of_undying' ? 'right_totem.json' : item + '.json';
       const itemJson = {
         item: item,
-        texture: `textures/items/${item}.png`,
-        frames: []
+        texture: `textures/items/${item}.png`, // Updated path
+        frames: [] // Add actual frames here from inputs
       };
 
-      zip.file(`attachables/${itemFileName}`, JSON.stringify(itemJson, null, 2));
+      zip.folder('attachables').file(itemFileName, JSON.stringify(itemJson, null, 2)); // Use the 'attachables' folder
     });
 
     // Download the zip
