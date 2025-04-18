@@ -20,6 +20,9 @@
       background-size: cover;
       backdrop-filter: blur(6px);
       overflow-x: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     header {
       font-family: 'MC Ten Lowercase Alt', sans-serif;
@@ -46,9 +49,14 @@
     main {
       margin-top: 120px; /* Adjusted to make space for fixed header */
       padding: 20px;
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: rgba(255, 255, 255, 0.5); /* Reduced opacity */
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      flex: 1; /* Make sure the content takes up remaining space */
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
     }
     label {
       color: white;
