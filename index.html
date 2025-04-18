@@ -14,12 +14,15 @@
       src: url('Mojang-Regular.ttf') format('truetype');
     }
 
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
       font-family: 'Mojang', sans-serif;
-      background: url('bg.png') no-repeat center center fixed;
+      background: url('https://i.pinimg.com/originals/e5/1f/1f/e51f1f6de2b3e00e6d1c32c14422eac1.png') no-repeat center center fixed;
       background-size: cover;
+      backdrop-filter: blur(5px);
+      overflow-x: hidden;
     }
 
     header {
@@ -49,15 +52,24 @@
     }
 
     main {
-      margin-top: 110px;
+      margin-top: 100px;
       padding: 20px;
+      box-sizing: border-box;
     }
 
     .selector-container {
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
 
-    select, input[type="text"] {
+    select, input[type="text"], button {
+      font-family: 'Mojang', sans-serif;
+    }
+
+    label, .item-name-label {
+      color: white;
+    }
+
+    select {
       padding: 10px;
       font-size: 16px;
       border-radius: 4px;
@@ -132,8 +144,16 @@
       margin-top: 5px;
     }
 
+    #packNameInput {
+      padding: 8px;
+      margin-top: 20px;
+      font-size: 16px;
+      max-width: 300px;
+      width: 100%;
+    }
+
     #downloadAll {
-      margin: 20px auto;
+      margin: 30px auto 0;
       padding: 12px 20px;
       background-color: #4CAF50;
       color: white;
@@ -221,6 +241,18 @@
       background-color: #ccc;
     }
 
+    .packname-label {
+      color: white;
+      margin-top: 30px;
+      display: block;
+      font-size: 16px;
+    }
+
+    @media (max-height: 500px) {
+      body {
+        height: auto;
+      }
+    }
   </style>
 </head>
 <body>
@@ -232,7 +264,7 @@
 
 <main>
   <div class="selector-container">
-    <label for="itemSelector"><strong>Add your texture:</strong></label><br>
+    <label for="itemSelector"><strong>Add your item:</strong></label><br>
     <select id="itemSelector">
       <option value="none" selected disabled>Select an item</option>
       <option value="diamond_sword">diamond_sword</option>
@@ -245,12 +277,10 @@
     </select>
   </div>
 
-  <div style="margin-bottom: 20px;">
-    <label for="packName"><strong>Pack name:</strong></label><br>
-    <input type="text" id="packName" placeholder="Enter pack name..." />
-  </div>
-
   <div id="itemsContainer"></div>
+
+  <label for="packNameInput" class="packname-label">Pack name:</label>
+  <input type="text" id="packNameInput" placeholder="Enter pack name (optional)">
 
   <button id="downloadAll">Download All</button>
 
@@ -390,9 +420,11 @@
   });
 
   document.getElementById('downloadAll').addEventListener('click', () => {
-    const packName = document.getElementById('packName').value.trim();
-    if (!createdItems.size) {
-      toastMessage.textContent = 'error: file_empty';
+    toast.style.display = 'none';
+    toastMessage.textContent = '';
+
+    if (createdItems.size === 0) {
+      toastMessage.textContent = 'error:file_empty';
       toast.style.display = 'block';
       return;
     }
@@ -403,7 +435,7 @@
       for (let i = 1; i <= 10; i++) {
         const input = document.getElementById(`${item}_frame_${i}`);
         if (!input || !input.files.length) {
-          errors.push(`error: ${item}: frame_${i} texture not available`);
+          errors.push(`error:${item}:frame_${i} texture not available`);
         }
       }
     });
@@ -412,8 +444,10 @@
       toastMessage.textContent = errors.join('\n');
       toast.style.display = 'block';
     } else {
-      // Logic to bundle images and generate .mcpack (can be implemented later)
-      alert(`All frames added. Preparing ${packName || 'your_pack'}.mcpack`);
+      // Replace with zip generation logic
+      const packNameInput = document.getElementById('packNameInput');
+      const finalName = (packNameInput.value || 'origin_animated_textures') + '.mcpack';
+      alert('Download initiated: ' + finalName);
     }
   });
 </script>
