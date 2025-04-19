@@ -290,47 +290,78 @@
           diamond_axe: "da",
           netherite_pickaxe: "np",
           diamond_pickaxe: "dp"
-        }[item] || "f";
+        }[item];
 
-        const inputs = dropdown.querySelectorAll("input[type='file']");
-        for (let i = 0; i < inputs.length; i++) {
-          const file = inputs[i].files[0];
+        Array.from(dropdown.querySelectorAll("input[type='file']")).forEach((input, idx) => {
+          const file = input.files[0];
           if (file) {
-            const data = await file.arrayBuffer();
-            folder.file(`${prefix}${i+1}.png`, data);
+            folder.file(`${prefix}${idx+1}.png`, file);
             hasData = true;
           }
-        }
+        });
 
-        try {
-          const res = await fetch(`${item}.json`);
-          if (!res.ok) throw new Error("Not found");
-          const jsonBlob = await res.blob();
-          attachables.file(`${item}.json`, jsonBlob);
-        } catch {
-          showToast(`error: ${item}.json not found`);
-          return;
-        }
+        const json = {
+          format_version: "1.10.0",
+          "minecraft:attachable": {
+            description: {
+              identifier: `minecraft:${item}`,
+              materials: {
+                default: "entity_alphatest",
+                enchanted: "entity_alphatest_glint"
+              },
+              textures: Object.fromEntries(Array.from({length: 10}, (_, i) => [`item_frame_${i+1}`, `textures/${item}/${prefix}${i+1}`])),
+              enchanted: "textures/misc/enchanted_item_glint",
+              geometry: {
+                default: "geometry.totem_animated_mesh"
+              },
+              animations: {
+                first: "animation.totem_false.first",
+                third: "animation.totem_false.third"
+              },
+              scripts: {
+                animate: [
+                  {"first": "c.is_first_person"},
+                  {"third": "!c.is_first_person"}
+                ]
+              },
+              render_controllers: ["controller.render.item_animated"]
+            }
+          }
+        };
+
+        attachables.file(`${item}.json`, JSON.stringify(json));
       }
 
-      if (!hasData) {
-        showToast("error:file_empty");
-        return;
-      }
+      const packName = document.getElementById("packName").value || "origin_animated_textures";
+      zip.file("manifest.json", JSON.stringify({
+        format_version: 2,
+        header: {
+          description: packName,
+          name: packName,
+          uuid: generateUUID(),
+          version: [1, 0, 0]
+        },
+        modules: [
+          {
+            description: "Main",
+            type: "scripting",
+            uuid: generateUUID(),
+            version: [1, 0, 0]
+          }
+        ]
+      }));
 
-      const icon = packIconInput.files[0];
-      if (icon) {
-        const iconData = await icon.arrayBuffer();
-        zip.file("pack_icon.png", iconData);
-      }
-
-      const zipName = document.getElementById("packName").value.trim() || "origin_animated_textures";
-      const blob = await zip.generateAsync({type: "blob"});
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = zipName + ".mcpack";
-      a.click();
+      const content = await zip.generateAsync({type: "blob"});
+      saveAs(content, `${packName}.zip`);
     });
+
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
   </script>
 </body>
 </html>
