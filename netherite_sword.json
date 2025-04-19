@@ -1,41 +1,367 @@
-{
-  "format_version": "1.10.0",
-  "minecraft:attachable": {
-    "description": {
-      "identifier": "minecraft:netherite_sword",
-      "materials": {
-        "default": "entity_alphatest",
-        "enchanted": "entity_alphatest_glint"
-      },
-      "textures": {
-        "item_frame_1": "textures/netherite_sword/ns1",
-        "item_frame_2": "textures/netherite_sword/ns2",
-        "item_frame_3": "textures/netherite_sword/ns3",
-        "item_frame_4": "textures/netherite_sword/ns4",
-        "item_frame_5": "textures/netherite_sword/ns5",
-        "item_frame_6": "textures/netherite_sword/ns6",
-        "item_frame_7": "textures/netherite_sword/ns7",
-        "item_frame_8": "textures/netherite_sword/ns8",
-        "item_frame_9": "textures/netherite_sword/ns9",
-        "item_frame_10": "textures/netherite_sword/ns10",
-        "enchanted": "textures/misc/enchanted_item_glint"
-      },
-      "geometry": {
-        "default": "geometry.totem_animated_mesh"
-      },
-      "animations": {
-        "first": "animation.totem_false.first",
-        "third": "animation.totem_false.third"
-      },
-      "scripts": {
-        "animate": [
-          {"first": "c.is_first_person"},
-          {"third": "!c.is_first_person"}
-        ]
-      },
-      "render_controllers": [
-        "controller.render.item_animated"
-      ]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Origin Client - Animated Items Maker</title>
+  <style>
+    @font-face {
+      font-family: 'MC';
+      src: url('mc-ten-lowercase-alt.ttf');
     }
-  }
-}
+
+    body {
+      margin: 0;
+      font-family: 'MC';
+      background: url('file.png') no-repeat center center fixed;
+      background-size: cover;
+      backdrop-filter: blur(10px);
+      color: white;
+      overflow-x: hidden;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: black;
+      text-align: center;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    main {
+      padding: 130px 20px 80px 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    select, input[type="file"], input[type="text"], button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      font-family: 'MC';
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: 1px solid white;
+      padding: 10px;
+      border-radius: 4px;
+    }
+
+    .frame-preview {
+      margin-top: 5px;
+      max-width: 100px;
+      max-height: 100px;
+    }
+
+    .dropdown {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      position: relative;
+    }
+
+    .dropdown h3 {
+      margin-top: 0;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+
+    #confirmation-dialog {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: black;
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 2000;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: red;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      z-index: 2000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      max-width: 80%;
+    }
+
+    .toast button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ORIGIN CLIENT</h1>
+    <h2>-animated items maker-</h2>
+  </header>
+
+  <main>
+    <label for="packName" style="color:white;">Pack name:</label>
+    <input type="text" id="packName" placeholder="Enter pack name">
+
+    <label for="packIcon" style="color:white;">Pack icon:</label>
+    <input type="file" id="packIcon" accept="image/*">
+    <img id="packIconPreview" class="frame-preview hidden"/>
+
+    <label for="itemSelector" style="color:white;">Add your item:</label>
+    <select id="itemSelector">
+      <option value="">None</option>
+      <option value="diamond_sword">diamond_sword</option>
+      <option value="netherite_sword">netherite_sword</option>
+      <option value="totem_of_undying">totem_of_undying</option>
+      <option value="netherite_axe">netherite_axe</option>
+      <option value="diamond_axe">diamond_axe</option>
+      <option value="netherite_pickaxe">netherite_pickaxe</option>
+      <option value="diamond_pickaxe">diamond_pickaxe</option>
+    </select>
+
+    <div id="dropdownContainer"></div>
+
+    <button id="downloadBtn">Download</button>
+  </main>
+
+  <div id="confirmation-dialog" class="hidden">
+    <p>Are you sure?</p>
+    <button id="confirmYes">Yes</button>
+    <button id="confirmNo">No</button>
+  </div>
+
+  <div id="toast" class="toast hidden">
+    <span id="toastText"></span>
+    <button onclick="closeToast()">×</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script>
+    const itemSelector = document.getElementById("itemSelector");
+    const dropdownContainer = document.getElementById("dropdownContainer");
+    const confirmationDialog = document.getElementById("confirmation-dialog");
+    const toast = document.getElementById("toast");
+    const toastText = document.getElementById("toastText");
+    const packIconInput = document.getElementById("packIcon");
+    const packIconPreview = document.getElementById("packIconPreview");
+
+    let addedItems = {};
+    let currentToDelete = null;
+
+    itemSelector.addEventListener("change", () => {
+      const item = itemSelector.value;
+      if (!item || addedItems[item]) return;
+
+      addedItems[item] = true;
+      const dropdown = document.createElement("div");
+      dropdown.className = "dropdown";
+      dropdown.dataset.item = item;
+
+      dropdown.innerHTML = `
+        <button class="close-btn" onclick="triggerDelete(this)">×</button>
+        <h3>Item name: ${item}</h3>
+        ${Array.from({length: 10}, (_, i) => `
+          <div>
+            <label>Add frame ${i+1}:</label>
+            <input type="file" accept="image/*" onchange="previewFrame(this, '${item}', ${i+1})">
+            <img class="frame-preview hidden"/>
+            <button onclick="removeFrame(this)">Remove Image</button>
+          </div>
+        `).join("")}
+      `;
+      dropdownContainer.appendChild(dropdown);
+    });
+
+    function triggerDelete(btn) {
+      currentToDelete = btn.closest(".dropdown");
+      confirmationDialog.classList.remove("hidden");
+    }
+
+    document.getElementById("confirmYes").onclick = () => {
+      const item = currentToDelete.dataset.item;
+      delete addedItems[item];
+      currentToDelete.remove();
+      confirmationDialog.classList.add("hidden");
+    };
+
+    document.getElementById("confirmNo").onclick = () => {
+      confirmationDialog.classList.add("hidden");
+    };
+
+    function previewFrame(input) {
+      const img = input.nextElementSibling;
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          img.src = e.target.result;
+          img.classList.remove("hidden");
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function removeFrame(btn) {
+      const input = btn.previousElementSibling.previousElementSibling;
+      input.value = "";
+      const img = btn.previousElementSibling;
+      img.src = "";
+      img.classList.add("hidden");
+    }
+
+    function showToast(message) {
+      toastText.textContent = message;
+      toast.classList.remove("hidden");
+    }
+
+    function closeToast() {
+      toast.classList.add("hidden");
+    }
+
+    packIconInput.addEventListener("change", () => {
+      const file = packIconInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          packIconPreview.src = e.target.result;
+          packIconPreview.classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", async () => {
+      const zip = new JSZip();
+      const textures = zip.folder("textures");
+      const attachables = zip.folder("attachables");
+      let hasData = false;
+      const dropdowns = document.querySelectorAll(".dropdown");
+
+      if (dropdowns.length === 0) {
+        showToast("error:file_empty");
+        return;
+      }
+
+      for (const dropdown of dropdowns) {
+        const item = dropdown.dataset.item;
+        const folder = textures.folder(item);
+        const prefix = {
+          diamond_sword: "ds",
+          netherite_sword: "ns",
+          totem_of_undying: "t",
+          netherite_axe: "na",
+          diamond_axe: "da",
+          netherite_pickaxe: "np",
+          diamond_pickaxe: "dp"
+        }[item];
+
+        Array.from(dropdown.querySelectorAll("input[type='file']")).forEach((input, idx) => {
+          const file = input.files[0];
+          if (file) {
+            folder.file(`${prefix}${idx+1}.png`, file);
+            hasData = true;
+          }
+        });
+
+        const json = {
+          format_version: "1.10.0",
+          "minecraft:attachable": {
+            description: {
+              identifier: `minecraft:${item}`,
+              materials: {
+                default: "entity_alphatest",
+                enchanted: "entity_alphatest_glint"
+              },
+              textures: Object.fromEntries(Array.from({length: 10}, (_, i) => [`item_frame_${i+1}`, `textures/${item}/${prefix}${i+1}`])),
+              enchanted: "textures/misc/enchanted_item_glint",
+              geometry: {
+                default: "geometry.totem_animated_mesh"
+              },
+              animations: {
+                first: "animation.totem_false.first",
+                third: "animation.totem_false.third"
+              },
+              scripts: {
+                animate: [
+                  {"first": "c.is_first_person"},
+                  {"third": "!c.is_first_person"}
+                ]
+              },
+              render_controllers: ["controller.render.item_animated"]
+            }
+          }
+        };
+
+        attachables.file(`${item}.json`, JSON.stringify(json));
+      }
+
+      const packName = document.getElementById("packName").value || "origin_animated_textures";
+      zip.file("manifest.json", JSON.stringify({
+        format_version: 2,
+        header: {
+          description: packName,
+          name: packName,
+          uuid: generateUUID(),
+          version: [1, 0, 0]
+        },
+        modules: [
+          {
+            description: "Main",
+            type: "scripting",
+            uuid: generateUUID(),
+            version: [1, 0, 0]
+          }
+        ]
+      }));
+
+      const content = await zip.generateAsync({type: "blob"});
+      saveAs(content, `${packName}.zip`);
+    });
+
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+  </script>
+</body>
+</html>
