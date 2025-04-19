@@ -14,7 +14,6 @@
       padding: 0;
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
-      overflow-x: hidden;
     }
 
     header {
@@ -46,14 +45,13 @@
     main {
       margin-top: 110px;
       padding: 20px;
+      background-image: url('file.png');
+      background-size: cover;
+      backdrop-filter: blur(10px);
     }
 
-    .selector-container {
+    .selector-container, .pack-name-container, .pack-icon-container {
       margin-bottom: 30px;
-    }
-
-    label {
-      color: white;
     }
 
     select, input[type="text"], input[type="file"] {
@@ -127,19 +125,8 @@
       cursor: pointer;
     }
 
-    .delete-section {
-      display: inline-block;
+    .frame-preview, input[type="file"] {
       margin-top: 10px;
-      background-color: #ff4d4d;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    input[type="file"] {
-      margin-top: 5px;
     }
 
     #downloadAll {
@@ -229,25 +216,6 @@
     .btn-no {
       background-color: #ccc;
     }
-
-    .blurred-background {
-      background-image: url('file.png');
-      background-size: cover;
-      filter: blur(10px);
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: -1;
-    }
-
-    .input-container {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 20px;
-    }
   </style>
 </head>
 <body>
@@ -258,15 +226,13 @@
 </header>
 
 <main>
-  <div class="blurred-background"></div>
-
-  <div class="input-container">
-    <label for="packName">Pack name:</label>
+  <div class="pack-name-container">
+    <label for="packName"><strong>Pack name:</strong></label><br>
     <input type="text" id="packName" placeholder="Enter pack name" />
   </div>
 
-  <div class="input-container">
-    <label for="itemSelector">Add your item:</label>
+  <div class="selector-container">
+    <label for="itemSelector" style="color: white;"><strong>Add your item:</strong></label><br>
     <select id="itemSelector">
       <option value="none" selected disabled>Select an item</option>
       <option value="diamond_sword">diamond_sword</option>
@@ -279,16 +245,15 @@
     </select>
   </div>
 
-  <div class="input-container">
-    <label for="packIcon">Pack icon:</label>
-    <input type="file" id="packIcon" />
-    <img id="iconPreview" class="frame-preview" style="display: none;" />
+  <div class="pack-icon-container">
+    <label for="packIcon"><strong>Pack Icon:</strong></label><br>
+    <input type="file" id="packIcon" accept="image/*" />
+    <img id="iconPreview" src="" alt="Pack Icon Preview" style="max-width: 150px; display: none;" />
   </div>
 
   <div id="itemsContainer"></div>
 
   <button id="downloadAll">Download All</button>
-
   <div id="toast" class="toast">
     <span id="toastMessage"></span>
     <button id="closeToast">×</button>
@@ -306,132 +271,136 @@
 <script>
   const itemsContainer = document.getElementById('itemsContainer');
   const itemSelector = document.getElementById('itemSelector');
+  const createdItems = new Set();
+
   const packNameInput = document.getElementById('packName');
   const packIconInput = document.getElementById('packIcon');
-  const packIconPreview = document.getElementById('iconPreview');
-  const downloadBtn = document.getElementById('downloadAll');
+  const iconPreview = document.getElementById('iconPreview');
+  const dialog = document.getElementById('confirmDialog');
+  const confirmYes = document.getElementById('confirmYes');
+  const confirmNo = document.getElementById('confirmNo');
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toastMessage');
   const closeToast = document.getElementById('closeToast');
-  const confirmDialog = document.getElementById('confirmDialog');
-  const confirmYes = document.getElementById('confirmYes');
-  const confirmNo = document.getElementById('confirmNo');
 
-  let itemCount = 0;
-  let frames = {};
+  let pendingDeleteSection = null;
 
-  function showToast(message) {
-    toastMessage.textContent = message;
-    toast.style.display = 'block';
-    setTimeout(() => {
-      toast.style.display = 'none';
-    }, 3000);
-  }
+  itemSelector.addEventListener('change', function () {
+    const item = itemSelector.value;
+    if (!createdItems.has(item)) {
+      const itemSection = document.createElement('div');
+      itemSection.classList.add('item-section');
+      itemSection.setAttribute('data-item', item);
+      itemSection.innerHTML = `
+        <div class="item-title">${item.replace('_', ' ')}</div>
+        <div class="frame-container">
+          <label for="frameFile_${item}" class="frame-label">Frame textures:</label><br>
+          <input type="file" id="frameFile_${item}" multiple />
+          <div id="framePreviews_${item}"></div>
+        </div>
+        <button class="delete-button" data-item="${item}">Delete</button>
+      `;
+
+      const deleteButton = itemSection.querySelector('.delete-button');
+      deleteButton.addEventListener('click', () => {
+        itemSection.remove();
+        createdItems.delete(item);
+      });
+
+      itemsContainer.appendChild(itemSection);
+      createdItems.add(item);
+    }
+  });
 
   closeToast.addEventListener('click', () => {
     toast.style.display = 'none';
   });
 
-  function handleAddItem(item) {
-    const itemName = item.value;
-    if (!itemName || itemName === 'none') return;
-
-    itemCount++;
-
-    const itemSection = document.createElement('div');
-    itemSection.classList.add('item-section');
-    itemSection.setAttribute('id', `item-${itemName}`);
-
-    const title = document.createElement('div');
-    title.classList.add('item-title');
-    title.textContent = itemName;
-
-    const removeButton = document.createElement('button');
-    removeButton.classList.add('delete-button');
-    removeButton.textContent = 'Remove';
-    removeButton.addEventListener('click', () => {
-      itemsContainer.removeChild(itemSection);
-      itemCount--;
-    });
-
-    const frameContainer = document.createElement('div');
-    frameContainer.classList.add('frame-container');
-    frameContainer.innerHTML = `
-      <label class="frame-label">Add frames for ${itemName}:</label>
-      <input type="file" accept="image/*" id="frame-${itemName}" />
-      <img id="preview-${itemName}" class="frame-preview" style="display: none;" />
-      <div class="remove-img-button" style="display: none;" id="remove-${itemName}">Remove Frame</div>
-    `;
-    itemSection.appendChild(title);
-    itemSection.appendChild(removeButton);
-    itemSection.appendChild(frameContainer);
-    itemsContainer.appendChild(itemSection);
+  function showToast(message) {
+    toastMessage.textContent = message;
+    toast.style.display = 'block';
   }
 
-  itemSelector.addEventListener('change', (e) => {
-    handleAddItem(e.target);
+  function validateFrames() {
+    if (createdItems.size === 0) {
+      showToast('Error: No item selected for texture upload!');
+      return false;
+    }
+    return true;
+  }
+
+  confirmYes.addEventListener('click', () => {
+    downloadZipFile();
+    dialog.style.display = 'none';
   });
 
-  packIconInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        packIconPreview.style.display = 'block';
-        packIconPreview.src = reader.result;
-      };
-      reader.readAsDataURL(file);
+  confirmNo.addEventListener('click', () => {
+    dialog.style.display = 'none';
+  });
+
+  document.getElementById('downloadAll').addEventListener('click', () => {
+    if (validateFrames()) {
+      dialog.style.display = 'flex';
     }
   });
 
-  downloadBtn.addEventListener('click', () => {
-    if (itemCount === 0) {
-      showToast('Error: File is empty!');
-      return;
-    }
-
-    const packName = packNameInput.value || 'origin_animated_textures';
-    const zipName = `${packName}.mcpack`;
-
+  function downloadZipFile() {
     const zip = new JSZip();
-    zip.folder('textures');
+    const texturesFolder = zip.folder('textures');
 
-    Object.keys(frames).forEach((itemName) => {
-      const itemFolder = zip.folder(`textures/${itemName}`);
-      frames[itemName].forEach((frame, index) => {
-        itemFolder.file(`${itemName[0]}s${index + 1}.png`, frame);
+    createdItems.forEach(item => {
+      const frames = document.querySelectorAll(`#frameFile_${item}`);
+      const itemFolder = texturesFolder.folder(item);
+
+      frames.forEach((frame, index) => {
+        const frameFile = frame.files[0];
+        const frameName = `${item.substring(0, 2)}${index + 1}.png`; // ds1.png, ns1.png, etc.
+
+        itemFolder.file(frameName, frameFile);
       });
     });
 
-    if (packIconPreview.style.display !== 'none') {
-      const packIcon = packIconPreview.src;
-      zip.file('pack_icon.png', packIcon.split(',')[1], { base64: true });
+    const packName = packNameInput.value.trim() || 'origin_animated_textures';
+    const packIconFile = packIconInput.files[0];
+
+    if (packIconFile) {
+      zip.file('pack_icon.png', packIconFile);
     }
 
-    zip.file('manifest.json', JSON.stringify({
-      "format_version": 2,
-      "header": {
-        "description": "origin animated items",
-        "name": packName,
-        "uuid": "unique-uuid",
-        "version": [1, 0, 0],
+    const manifest = {
+      format_version: 2,
+      header: {
+        description: 'Origin Client Animated Items',
+        name: packName,
+        uuid: generateUUID(),
+        version: [1, 0, 0]
       },
-      "modules": [{
-        "description": "origin animated items",
-        "type": "scripting",
-        "uuid": "unique-uuid",
-        "version": [1, 0, 0],
+      modules: [{
+        description: 'Origin Client Animated Items',
+        language: 'javascript',
+        uuid: generateUUID(),
+        version: [1, 0, 0]
       }]
-    }));
+    };
 
-    zip.generateAsync({ type: 'blob' }).then((content) => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(content);
-      a.download = zipName;
-      a.click();
+    zip.file('manifest.json', JSON.stringify(manifest));
+
+    zip.generateAsync({ type: 'blob' }).then(content => {
+      const blob = new Blob([content], { type: 'application/zip' });
+      const downloadLink = document.createElement('a');
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = `${packName}.mcpack`;
+      downloadLink.click();
     });
-  });
-</script>
+  }
 
+  function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0,
+        v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+</script>
 </body>
 </html>
