@@ -84,6 +84,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
         
         .remove-frame {
@@ -94,9 +95,14 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            z-index: 2;
         }
         
         .item-box {
@@ -115,8 +121,9 @@
             color: white;
             border: none;
             border-radius: 4px;
-            padding: 2px 5px;
+            padding: 5px 10px;
             cursor: pointer;
+            font-weight: bold;
         }
         
         button {
@@ -147,6 +154,10 @@
         #downloadBtn:hover {
             background-color: #4444dd;
         }
+        
+        #itemSelect {
+            text-transform: capitalize;
+        }
     </style>
 </head>
 <body>
@@ -170,7 +181,6 @@
                 <option value="none" selected>Select an item</option>
                 <option value="netherite_sword">Netherite Sword</option>
                 <option value="totem_of_undying">Totem of Undying</option>
-                <!-- Add more items as needed -->
             </select>
         </div>
         
@@ -231,9 +241,11 @@
                 const frameGrid = document.createElement('div');
                 frameGrid.className = 'frame-grid';
                 
-                for (let i = 1; i <= 10; i++) {
+                // Now using 5 frames instead of 10
+                for (let i = 1; i <= 5; i++) {
                     const frame = document.createElement('div');
                     frame.className = 'frame';
+                    frame.dataset.frameIndex = i;
                     
                     const frameLabel = document.createElement('div');
                     frameLabel.textContent = `Frame ${i}`;
@@ -243,7 +255,7 @@
                     const framePreview = document.createElement('div');
                     framePreview.className = 'frame-preview';
                     framePreview.textContent = 'Add texture';
-                    framePreview.addEventListener('click', createFrameClickHandler(framePreview));
+                    framePreview.addEventListener('click', createFrameClickHandler(framePreview, i));
                     frame.appendChild(framePreview);
                     
                     const removeFrame = document.createElement('button');
@@ -263,7 +275,7 @@
                 itemContainer.appendChild(itemBox);
             }
             
-            function createFrameClickHandler(frameElement) {
+            function createFrameClickHandler(frameElement, frameIndex) {
                 return function() {
                     const input = document.createElement('input');
                     input.type = 'file';
@@ -278,6 +290,7 @@
                                 frameElement.style.backgroundImage = `url(${event.target.result})`;
                                 frameElement.style.backgroundSize = 'cover';
                                 frameElement.textContent = '';
+                                frameElement.dataset.imgData = event.target.result;
                             };
                             reader.readAsDataURL(file);
                         }
@@ -287,6 +300,62 @@
                 };
             }
             
+            // Download functionality
+            document.getElementById('downloadBtn').addEventListener('click', async () => {
+                const packName = document.getElementById('packName').value || 'unnamed_pack';
+                const zip = new JSZip();
+                
+                // Add pack icon if exists
+                const iconFile = document.getElementById('packIcon').files[0];
+                if (iconFile) {
+                    zip.file('pack.png', iconFile);
+                }
+                
+                // Create pack.mcmeta
+                const mcmeta = {
+                    pack: {
+                        pack_format: 8,
+                        description: packName
+                    }
+                };
+                zip.file('pack.mcmeta', JSON.stringify(mcmeta, null, 2));
+                
+                // Process items
+                const items = document.querySelectorAll('.item-box');
+                items.forEach(item => {
+                    const itemId = item.dataset.itemId;
+                    const frames = item.querySelectorAll('.frame-preview');
+                    
+                    // Create item texture structure
+                    const texturesFolder = zip.folder(`assets/minecraft/textures/${itemId}`);
+                    
+                    frames.forEach((frame, index) => {
+                        if (frame.dataset.imgData) {
+                            // Convert data URL to Blob
+                            const blob = dataURItoBlob(frame.dataset.imgData);
+                            texturesFolder.file(`ns${index+1}.png`, blob);
+                        }
+                    });
+                });
+                
+                // Generate ZIP file
+                const content = await zip.generateAsync({type: 'blob'});
+                saveAs(content, `${packName.replace(/ /g, '_')}.zip`);
+            });
+            
+            // Helper function to convert data URL to Blob
+            function dataURItoBlob(dataURI) {
+                const byteString = atob(dataURI.split(',')[1]);
+                const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                
+                return new Blob([ab], {type: mimeString});
+            }
             // Download functionality (conceptual - would need server-side processing)
             document.getElementById('downloadBtn').addEventListener('click', () => {
                 alert('This would generate and download the resource pack in a real implementation');
