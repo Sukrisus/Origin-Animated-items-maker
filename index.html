@@ -1,193 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Pack Creator</title>
-    <style>
-        body {
-            font-family: 'Minecraft', sans-serif;
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .container {
-            background-color: #2d2d2d;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        h1 {
-            color: #55ff55;
-            text-align: center;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 10px;
-            background-color: #3d3d3d;
-            border: 1px solid #555;
-            border-radius: 4px;
-            color: white;
-        }
-        
-        .icon-preview {
-            width: 64px;
-            height: 64px;
-            margin-top: 10px;
-            background-color: #3d3d3d;
-            border: 2px dashed #555;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .item-container {
-            margin-top: 30px;
-        }
-        
-        .frame-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .frame {
-            background-color: #3d3d3d;
-            padding: 10px;
-            border-radius: 4px;
-            position: relative;
-        }
-        
-        .frame-preview {
-            width: 100%;
-            height: 64px;
-            background-color: #2d2d2d;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .remove-frame {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: #ff5555;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 2;
-        }
-        
-        .item-box {
-            background-color: #3d3d3d;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            position: relative;
-        }
-        
-        .remove-item {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: #ff5555;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        button {
-            background-color: #55ff55;
-            color: #1a1a1a;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 20px;
-            width: 100%;
-        }
-        
-        button:hover {
-            background-color: #44dd44;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        #downloadBtn {
-            background-color: #5555ff;
-            margin-top: 30px;
-        }
-        
-        #downloadBtn:hover {
-            background-color: #4444dd;
-        }
-        
-        #itemSelect {
-            text-transform: capitalize;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minecraft Pack Creator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #000;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 10px;
+      background-color: #111;
+      border: 1px solid #333;
+      color: #fff;
+    }
+
+    .icon-preview {
+      width: 64px;
+      height: 64px;
+      background-color: #111;
+      border: 2px dashed #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .item-container {
+      margin-top: 20px;
+    }
+
+    .item-box {
+      background-color: #111;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #333;
+    }
+
+    .frame-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .frame {
+      background-color: #222;
+      padding: 5px;
+      position: relative;
+    }
+
+    .frame-preview {
+      width: 100%;
+      height: 64px;
+      background-color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #ccc;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .remove-frame {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background-color: #900;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .remove-item {
+      background-color: #900;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button {
+      background-color: #fff;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #ccc;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Minecraft Pack Creator</h1>
-        
-        <div class="form-group">
-            <label for="packName">Pack Name</label>
-            <input type="text" id="packName" placeholder="Enter pack name">
-        </div>
-        
-        <div class="form-group">
-            <label for="packIcon">Pack Icon</label>
-            <input type="file" id="packIcon" accept="image/*" class="hidden">
-            <div class="icon-preview" id="iconPreview">Click to add icon</div>
-        </div>
-        
-        <div class="form-group">
-            <label for="itemSelect">Add Item</label>
-            <select id="itemSelect">
-                <option value="none" selected>Select an item</option>
-                <option value="netherite_sword">Netherite Sword</option>
-                <option value="totem_of_undying">Totem of Undying</option>
-            </select>
-        </div>
-        
-        <div id="itemContainer" class="item-container"></div>
-        
-        <button id="downloadBtn">Download Resource Pack</button>
+  <div class="container">
+    <h1>Minecraft Pack Creator</h1>
+
+    <div class="form-group">
+      <label for="packName">Pack Name</label>
+      <input type="text" id="packName" placeholder="Enter pack name" />
     </div>
+
+    <div class="form-group">
+      <label for="packIcon">Pack Icon</label>
+      <input type="file" id="packIcon" accept="image/*" class="hidden" />
+      <div class="icon-preview" id="iconPreview">Click to add icon</div>
+    </div>
+
+    <div class="form-group">
+      <label for="itemSelect">Add Item</label>
+      <select id="itemSelect">
+        <option value="none" selected>Select an item</option>
+        <option value="netherite_sword">Netherite Sword</option>
+        <option value="totem_of_undying">Totem of Undying</option>
+      </select>
+    </div>
+
+    <div id="itemContainer" class="item-container"></div>
+
+    <button id="downloadBtn">Download Resource Pack</button>
+  </div>
+
+  <!-- Include JSZip and FileSaver.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const iconPreview = document.getElementById('iconPreview');
+      const packIconInput = document.getElementById('packIcon');
+      const itemSelect = document.getElementById('itemSelect');
+      const itemContainer = document.getElementById('itemContainer');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      iconPreview.addEventListener('click', () => {
+        packIconInput.click();
+      });
+
+      packIconInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            iconPreview.style.backgroundImage = `url(${event.target.result})`;
+            iconPreview.style.backgroundSize = 'cover';
+            iconPreview.textContent = '';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      itemSelect.addEventListener('change', (e) => {
+        if (e.target.value !== 'none') {
+          addItemBox(e.target.value);
+          e.target.value = 'none';
+        }
+      });
+
+      function addItemBox(itemId) {
+        const itemBox = document.createElement('div');
+        itemBox.className = 'item-box';
+        itemBox.dataset.itemId = itemId;
+
+        const itemTitle = document.createElement('h3');
+        itemTitle.textContent = itemId.replace(/_/g, ' ');
+        itemBox.appendChild(itemTitle);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-item';
+        removeBtn.textContent = 'Remove Item';
+        removeBtn.addEventListener('click', () => itemBox.remove());
+        itemBox.appendChild(removeBtn);
+
+        const frameGrid = document.createElement('div');
+        frameGrid.className = 'frame-grid';
+
+        for (let i = 1; i <= 5; i++) {
+          const frame = document.createElement('div');
+          frame.className = 'frame';
+          frame.dataset.frameIndex = i;
+
+          const framePreview = document.createElement('div');
+          framePreview.className = 'frame-preview';
+          framePreview.textContent = 'Add texture';
+          framePreview.addEventListener('click', createFrameClickHandler(framePreview, i));
+          frame.appendChild(framePreview);
+
+          const removeFrame = document.createElement('button');
+          removeFrame.className = 'remove-frame';
+          removeFrame.textContent = 'X';
+          removeFrame.addEventListener('click', (e) => {
+            e.stopPropagation();
+            framePreview.style.backgroundImage = '';
+            framePreview.textContent = 'Add texture';
+            delete framePreview.dataset.imgData;
+          });
+          frame.appendChild(removeFrame);
+
+          frameGrid.appendChild(frame);
+        }
+
+        itemBox.appendChild(frameGrid);
+        itemContainer.appendChild(itemBox);
+      }
+
+      function createFrameClickHandler(frameElement, frameIndex) {
+        return function () {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*';
+          input.className = 'hidden';
+
+          input.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                frameElement.style.backgroundImage = `url(${event.target.result})`;
+                frameElement.style.backgroundSize = 'cover';
+                frameElement.textContent = '';
+                frameElement.dataset.imgData = event.target.result;
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+
+          input.click();
+        };
+      }
+
+      downloadBtn.addEventListener('click', async () => {
+        const packName = document.getElementById('packName').value || 'unnamed_pack';
+        const zip = new JSZip();
+
+        const iconFile = document.getElementById('packIcon').files[0];
+        if (iconFile) {
+          zip.file('pack.png', iconFile);
+        }
+
+        const mcmeta = {
+          pack: {
+            pack_format: 8,
+            description: packName
+          }
+        };
+        zip.file('pack.mcmeta', JSON.stringify(mcmeta, null, 2));
+
+        const items = document.querySelectorAll('.item-box');
+        items.forEach(item => {
+          const itemId = item.dataset.itemId;
+          const frames = item.querySelectorAll('.frame-preview');
+
+          const texturesFolder = zip.folder(`assets/minecraft/textures/${itemId}`);
+
+          frames.forEach((frame, index) => {
+            if (frame.dataset.imgData) {
+              const blob = dataURItoBlob(frame.dataset.imgData);
+              texturesFolder.file(`ns${index + 1}.png`, blob);
+            }
+          });
+        });
+
+        const content = await zip.generateAsync({ type: 'blob' });
+        saveAs(content, `${packName.replace(/ /g, '_')}.zip`);
+      });
+
+      function dataURItoBlob(dataURI) {
+        const byteString = at
+::contentReference[oaicite:22]{index=22}
+ 
+
+2/2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ChatGPT can make mistakes. Check important info. See Cookie 
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
