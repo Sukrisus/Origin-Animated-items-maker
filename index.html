@@ -225,14 +225,16 @@
 
     // Helper to get frame filename
     function getFrameFilename(itemId, frameNumber) {
-        if (itemId === 'netherite_sword') {
-            return `ns${frameNumber}`;
-        } else if (itemId === 'totem_of_undying') {
-            return `totem${frameNumber}`;
-        }
-        // fallback, should not happen
-        return `frame${frameNumber}`;
+    switch(itemId) {
+        case 'netherite_sword':    return `ns${frameNumber}.png`;
+        case 'totem_of_undying':   return `totem${frameNumber}.png`;
+        case 'diamond_sword':      return `ds${frameNumber}.png`;
+        case 'golden_apple':       return `ga${frameNumber}.png`;
+        case 'netherite_axe':      return `na${frameNumber}.png`;
+        default:                   return `frame${frameNumber}.png`;
     }
+}
+
 
     document.getElementById('downloadBtn').onclick = async () => {
         const zip = new JSZip();
