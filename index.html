@@ -192,6 +192,72 @@
         document.getElementById('downloadBtn').onclick = () => {
             alert('Download functionality not implemented in this demo.');
         };
-    </script>
+    // Generate UUID
+    function generateUUID() {
+        return crypto.randomUUID();
+    }
+
+    // Create manifest content
+    function createManifest(packName) {
+        const headerUUID = generateUUID();
+        const moduleUUID = generateUUID();
+        
+        return JSON.stringify({
+            "format_version": 2,
+            "header": {
+                "name": packName || "Origin optimal animated items",
+                "description": "Generated using Origin Optimal animated items",
+                "version": [1, 0, 0],
+                "uuid": headerUUID,
+                "min_engine_version": [1, 13, 0],
+                "pack_scope": "global"
+            },
+            "modules": [
+                {
+                    "type": "resources",
+                    "version": [1, 0, 0],
+                    "uuid": moduleUUID
+                }
+            ]
+        }, null, 2);
+    }
+
+    // Download functionality
+    document.getElementById('downloadBtn').onclick = async () => {
+        const zip = new JSZip();
+        const packName = document.getElementById('packName').value;
+        const fileName = (packName ? packName : 'origin_optimal_animated_items') + '.mcpack.zip';
+
+        // Add manifest
+        zip.file("manifest.json", createManifest(packName));
+
+        // Add pack icon
+        const iconFile = document.getElementById('packIcon').files[0];
+        if (iconFile) {
+            zip.file("pack_icon.png", iconFile);
+        }
+
+        // Process items
+        const items = document.getElementsByClassName('item');
+        for (const item of items) {
+            const itemId = item.id;
+            const frames = item.getElementsByClassName('frame');
+
+            for (let i = 0; i < frames.length; i++) {
+                const frameInput = frames[i].querySelector('input[type="file"]');
+                if (frameInput.files.length > 0) {
+                    const frameFile = frameInput.files[0];
+                    const frameNumber = i + 1;
+                    const filePath = `textures/items/${itemId}/frame_${frameNumber}.png`;
+                    zip.file(filePath, frameFile);
+                }
+            }
+        }
+
+        // Generate ZIP
+        const content = await zip.generateAsync({type: "blob"});
+        saveAs(content, fileName);
+    };
+</script>
 </body>
 </html>
