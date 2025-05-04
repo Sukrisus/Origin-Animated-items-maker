@@ -1,513 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Minecraft Pack Creator</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #000;
-      color: #fff;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: auto;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    input[type="text"],
-    select {
-      width: 100%;
-      padding: 10px;
-      background-color: #111;
-      border: 1px solid #333;
-      color: #fff;
-    }
-
-    .icon-preview {
-      width: 64px;
-      height: 64px;
-      background-color: #111;
-      border: 2px dashed #333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .item-container {
-      margin-top: 20px;
-    }
-
-    .item-box {
-      background-color: #111;
-      padding: 15px;
-      margin-bottom: 15px;
-      border: 1px solid #333;
-    }
-
-    .frame-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .frame {
-      background-color: #222;
-      padding: 5px;
-      position: relative;
-    }
-
-    .frame-preview {
-      width: 100%;
-      height: 64px;
-      background-color: #333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: #ccc;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .remove-frame {
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      background-color: #900;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .remove-item {
-      background-color: #900;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    button {
-      background-color: #fff;
-      color: #000;
-      border: none;
-      padding: 10px 20px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    button:hover {
-      background-color: #ccc;
-    }
-
-    .hidden {
-      display: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Bedrock Pack Creator</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        input[type=text], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            background-color: #222;
+            border: 1px solid #555;
+            color: #fff;
+            border-radius: 5px;
+        }
+        input[type=file] {
+            margin-top: 5px;
+            color: #fff;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .item {
+            border: 1px solid #555;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            position: relative;
+        }
+        .remove-item {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #444;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+        }
+        .frame {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .frame input[type=file] {
+            flex-grow: 1;
+        }
+        .remove-frame {
+            background: #444;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 10px;
+            padding: 5px 10px;
+        }
+        #downloadBtn {
+            margin-top: 30px;
+            width: 100%;
+            padding: 15px;
+            background-color: #fff;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .frame {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .remove-frame {
+                margin-left: 0;
+                margin-top: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Minecraft Pack Creator</h1>
+    <div class="container">
+        <label for="packName">Pack Name:</label>
+        <input type="text" id="packName" name="packName" placeholder="Enter your pack name">
 
-    <div class="form-group">
-      <label for="packName">Pack Name</label>
-      <input type="text" id="packName" placeholder="Enter pack name" />
+        <label for="packIcon">Pack Icon:</label>
+        <input type="file" id="packIcon" name="packIcon" accept="image/*">
+
+        <label for="addItem">Add Your Item:</label>
+        <select id="addItem" name="addItem">
+            <option value="none">None</option>
+            <option value="netherite_sword">Netherite Sword</option>
+            <option value="totem_of_undying">Totem of Undying</option>
+        </select>
+
+        <div id="itemsContainer"></div>
+
+        <button id="downloadBtn">Download</button>
     </div>
-
-    <div class="form-group">
-      <label for="packIcon">Pack Icon</label>
-      <input type="file" id="packIcon" accept="image/*" class="hidden" />
-      <div class="icon-preview" id="iconPreview">Click to add icon</div>
-    </div>
-
-    <div class="form-group">
-      <label for="itemSelect">Add Item</label>
-      <select id="itemSelect">
-        <option value="none" selected>Select an item</option>
-        <option value="netherite_sword">Netherite Sword</option>
-        <option value="totem_of_undying">Totem of Undying</option>
-      </select>
-    </div>
-
-    <div id="itemContainer" class="item-container"></div>
-
-    <button id="downloadBtn">Download Resource Pack</button>
-  </div>
-
-  <!-- Include JSZip and FileSaver.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const iconPreview = document.getElementById('iconPreview');
-      const packIconInput = document.getElementById('packIcon');
-      const itemSelect = document.getElementById('itemSelect');
-      const itemContainer = document.getElementById('itemContainer');
-      const downloadBtn = document.getElementById('downloadBtn');
-
-      iconPreview.addEventListener('click', () => {
-        packIconInput.click();
-      });
-
-      packIconInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            iconPreview.style.backgroundImage = `url(${event.target.result})`;
-            iconPreview.style.backgroundSize = 'cover';
-            iconPreview.textContent = '';
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      itemSelect.addEventListener('change', (e) => {
-        if (e.target.value !== 'none') {
-          addItemBox(e.target.value);
-          e.target.value = 'none';
-        }
-      });
-
-      function addItemBox(itemId) {
-        const itemBox = document.createElement('div');
-        itemBox.className = 'item-box';
-        itemBox.dataset.itemId = itemId;
-
-        const itemTitle = document.createElement('h3');
-        itemTitle.textContent = itemId.replace(/_/g, ' ');
-        itemBox.appendChild(itemTitle);
-
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-item';
-        removeBtn.textContent = 'Remove Item';
-        removeBtn.addEventListener('click', () => itemBox.remove());
-        itemBox.appendChild(removeBtn);
-
-        const frameGrid = document.createElement('div');
-        frameGrid.className = 'frame-grid';
-
-        for (let i = 1; i <= 5; i++) {
-          const frame = document.createElement('div');
-          frame.className = 'frame';
-          frame.dataset.frameIndex = i;
-
-          const framePreview = document.createElement('div');
-          framePreview.className = 'frame-preview';
-          framePreview.textContent = 'Add texture';
-          framePreview.addEventListener('click', createFrameClickHandler(framePreview, i));
-          frame.appendChild(framePreview);
-
-          const removeFrame = document.createElement('button');
-          removeFrame.className = 'remove-frame';
-          removeFrame.textContent = 'X';
-          removeFrame.addEventListener('click', (e) => {
-            e.stopPropagation();
-            framePreview.style.backgroundImage = '';
-            framePreview.textContent = 'Add texture';
-            delete framePreview.dataset.imgData;
-          });
-          frame.appendChild(removeFrame);
-
-          frameGrid.appendChild(frame);
-        }
-
-        itemBox.appendChild(frameGrid);
-        itemContainer.appendChild(itemBox);
-      }
-
-      function createFrameClickHandler(frameElement, frameIndex) {
-        return function () {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = 'image/*';
-          input.className = 'hidden';
-
-          input.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (event) => {
-                frameElement.style.backgroundImage = `url(${event.target.result})`;
-                frameElement.style.backgroundSize = 'cover';
-                frameElement.textContent = '';
-                frameElement.dataset.imgData = event.target.result;
-              };
-              reader.readAsDataURL(file);
-            }
-          });
-
-          input.click();
-        };
-      }
-
-      downloadBtn.addEventListener('click', async () => {
-        const packName = document.getElementById('packName').value || 'unnamed_pack';
-        const zip = new JSZip();
-
-        const iconFile = document.getElementById('packIcon').files[0];
-        if (iconFile) {
-          zip.file('pack.png', iconFile);
-        }
-
-        const mcmeta = {
-          pack: {
-            pack_format: 8,
-            description: packName
-          }
-        };
-        zip.file('pack.mcmeta', JSON.stringify(mcmeta, null, 2));
-
-        const items = document.querySelectorAll('.item-box');
-        items.forEach(item => {
-          const itemId = item.dataset.itemId;
-          const frames = item.querySelectorAll('.frame-preview');
-
-          const texturesFolder = zip.folder(`assets/minecraft/textures/${itemId}`);
-
-          frames.forEach((frame, index) => {
-            if (frame.dataset.imgData) {
-              const blob = dataURItoBlob(frame.dataset.imgData);
-              texturesFolder.file(`ns${index + 1}.png`, blob);
-            }
-          });
-        });
-
-        const content = await zip.generateAsync({ type: 'blob' });
-        saveAs(content, `${packName.replace(/ /g, '_')}.zip`);
-      });
-
-      function dataURItoBlob(dataURI) {
-        const byteString = at
-::contentReference[oaicite:22]{index=22}
- 
-
-2/2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ChatGPT can make mistakes. Check important info. See Cookie 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Pack icon handling
-            const iconPreview = document.getElementById('iconPreview');
-            const packIconInput = document.getElementById('packIcon');
-            
-            iconPreview.addEventListener('click', () => {
-                packIconInput.click();
-            });
-            
-            packIconInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        iconPreview.style.backgroundImage = `url(${event.target.result})`;
-                        iconPreview.style.backgroundSize = 'cover';
-                        iconPreview.textContent = '';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-            
-            // Item selection handling
-            const itemSelect = document.getElementById('itemSelect');
-            const itemContainer = document.getElementById('itemContainer');
-            
-            itemSelect.addEventListener('change', (e) => {
-                if (e.target.value !== 'none') {
-                    addItemBox(e.target.value);
-                    e.target.value = 'none';
-                }
-            });
-            
-            function addItemBox(itemId) {
-                const itemBox = document.createElement('div');
-                itemBox.className = 'item-box';
-                itemBox.dataset.itemId = itemId;
-                
-                const itemTitle = document.createElement('h3');
-                itemTitle.textContent = itemId.replace(/_/g, ' ');
-                itemBox.appendChild(itemTitle);
-                
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-item';
-                removeBtn.textContent = 'X';
-                removeBtn.addEventListener('click', () => itemBox.remove());
-                itemBox.appendChild(removeBtn);
-                
-                const frameGrid = document.createElement('div');
-                frameGrid.className = 'frame-grid';
-                
-                // Now using 5 frames instead of 10
-                for (let i = 1; i <= 5; i++) {
-                    const frame = document.createElement('div');
-                    frame.className = 'frame';
-                    frame.dataset.frameIndex = i;
-                    
-                    const frameLabel = document.createElement('div');
-                    frameLabel.textContent = `Frame ${i}`;
-                    frameLabel.style.marginBottom = '5px';
-                    frame.appendChild(frameLabel);
-                    
-                    const framePreview = document.createElement('div');
-                    framePreview.className = 'frame-preview';
-                    framePreview.textContent = 'Add texture';
-                    framePreview.addEventListener('click', createFrameClickHandler(framePreview, i));
-                    frame.appendChild(framePreview);
-                    
-                    const removeFrame = document.createElement('button');
-                    removeFrame.className = 'remove-frame';
-                    removeFrame.textContent = 'X';
-                    removeFrame.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        framePreview.style.backgroundImage = '';
-                        framePreview.textContent = 'Add texture';
-                    });
-                    frame.appendChild(removeFrame);
-                    
-                    frameGrid.appendChild(frame);
-                }
-                
-                itemBox.appendChild(frameGrid);
-                itemContainer.appendChild(itemBox);
+        const addItemSelect = document.getElementById('addItem');
+        const itemsContainer = document.getElementById('itemsContainer');
+
+        addItemSelect.addEventListener('change', () => {
+            const value = addItemSelect.value;
+            if (value === 'none') return;
+
+            // Check if item already added
+            if (document.getElementById(value)) {
+                alert('Item already added');
+                addItemSelect.value = 'none';
+                return;
             }
-            
-            function createFrameClickHandler(frameElement, frameIndex) {
-                return function() {
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = 'image/*';
-                    input.className = 'hidden';
-                    
-                    input.addEventListener('change', (e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (event) => {
-                                frameElement.style.backgroundImage = `url(${event.target.result})`;
-                                frameElement.style.backgroundSize = 'cover';
-                                frameElement.textContent = '';
-                                frameElement.dataset.imgData = event.target.result;
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                    
-                    input.click();
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item';
+            itemDiv.id = value;
+
+            const removeItemBtn = document.createElement('button');
+            removeItemBtn.className = 'remove-item';
+            removeItemBtn.textContent = 'X';
+            removeItemBtn.onclick = () => {
+                itemsContainer.removeChild(itemDiv);
+                addItemSelect.value = 'none';
+            };
+
+            itemDiv.appendChild(removeItemBtn);
+
+            const title = document.createElement('h3');
+            title.textContent = value.replace(/_/g, ' ');
+            itemDiv.appendChild(title);
+
+            for (let i = 1; i <= 10; i++) {
+                const frameDiv = document.createElement('div');
+                frameDiv.className = 'frame';
+
+                const label = document.createElement('label');
+                label.textContent = `Add Frame ${i}: `;
+                label.htmlFor = `${value}_frame_${i}`;
+
+                const inputFile = document.createElement('input');
+                inputFile.type = 'file';
+                inputFile.accept = 'image/*';
+                inputFile.id = `${value}_frame_${i}`;
+
+                const removeFrameBtn = document.createElement('button');
+                removeFrameBtn.className = 'remove-frame';
+                removeFrameBtn.textContent = 'Remove';
+                removeFrameBtn.onclick = () => {
+                    frameDiv.remove();
                 };
+
+                frameDiv.appendChild(label);
+                frameDiv.appendChild(inputFile);
+                frameDiv.appendChild(removeFrameBtn);
+
+                itemDiv.appendChild(frameDiv);
             }
-            
-            // Download functionality
-            document.getElementById('downloadBtn').addEventListener('click', async () => {
-                const packName = document.getElementById('packName').value || 'unnamed_pack';
-                const zip = new JSZip();
-                
-                // Add pack icon if exists
-                const iconFile = document.getElementById('packIcon').files[0];
-                if (iconFile) {
-                    zip.file('pack.png', iconFile);
-                }
-                
-                // Create pack.mcmeta
-                const mcmeta = {
-                    pack: {
-                        pack_format: 8,
-                        description: packName
-                    }
-                };
-                zip.file('pack.mcmeta', JSON.stringify(mcmeta, null, 2));
-                
-                // Process items
-                const items = document.querySelectorAll('.item-box');
-                items.forEach(item => {
-                    const itemId = item.dataset.itemId;
-                    const frames = item.querySelectorAll('.frame-preview');
-                    
-                    // Create item texture structure
-                    const texturesFolder = zip.folder(`/textures/${itemId}`);
-                    
-                    frames.forEach((frame, index) => {
-                        if (frame.dataset.imgData) {
-                            // Convert data URL to Blob
-                            const blob = dataURItoBlob(frame.dataset.imgData);
-                            texturesFolder.file(`ns${index+1}.png`, blob);
-                        }
-                    });
-                });
-                
-                // Generate ZIP file
-                const content = await zip.generateAsync({type: 'blob'});
-                saveAs(content, `${packName.replace(/ /g, '_')}.zip`);
-            });
-            
-            // Helper function to convert data URL to Blob
-            function dataURItoBlob(dataURI) {
-                const byteString = atob(dataURI.split(',')[1]);
-                const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-                const ab = new ArrayBuffer(byteString.length);
-                const ia = new Uint8Array(ab);
-                
-                for (let i = 0; i < byteString.length; i++) {
-                    ia[i] = byteString.charCodeAt(i);
-                }
-                
-                return new Blob([ab], {type: mimeString});
-            }
-            // Download functionality (conceptual - would need server-side processing)
-            document.getElementById('downloadBtn').addEventListener('click', () => {
-                alert('This would generate and download the resource pack in a real implementation');
-                // In a real implementation, this would:
-                // 1. Collect all data
-                // 2. Generate proper pack structure
-                // 3. Create ZIP file
-                // 4. Trigger download
-            });
+
+            itemsContainer.appendChild(itemDiv);
+            addItemSelect.value = 'none';
         });
+
+        // Download button placeholder (implement zip/download logic as needed)
+        document.getElementById('downloadBtn').onclick = () => {
+            alert('Download functionality not implemented in this demo.');
+        };
     </script>
 </body>
 </html>
