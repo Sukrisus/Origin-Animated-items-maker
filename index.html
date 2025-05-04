@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <title>Minecraft Bedrock Pack Creator</title>
     <style>
         body {
@@ -112,18 +111,16 @@
         <label for="packIcon">Pack Icon:</label>
         <input type="file" id="packIcon" name="packIcon" accept="image/*">
 
-        <label for="addItem">Add Your Item:</label><select id="addItem" name="addItem">
-    <option value="none">None</option>
-    <option value="netherite_sword">Netherite Sword</option>
-    <option value="totem_of_undying">Totem of Undying</option>
-    <option value="diamond_sword">Diamond Sword</option>
-    <option value="golden_apple">Golden Apple</option>
-    <option value="netherite_axe">Netherite Axe</option>
-</select>
-        
-
+        <label for="addItem">Add Your Item:</label>
+        <select id="addItem" name="addItem">
+            <option value="none">None</option>
+            <option value="netherite_sword">Netherite Sword</option>
+            <option value="totem_of_undying">Totem of Undying</option>
+            <option value="diamond_sword">Diamond Sword</option>
+            <option value="golden_apple">Golden Apple</option>
+            <option value="netherite_axe">Netherite Axe</option>
+        </select>
         <div id="itemsContainer"></div>
-
         <button id="downloadBtn">Download</button>
     </div>
 
@@ -131,161 +128,171 @@
         const addItemSelect = document.getElementById('addItem');
         const itemsContainer = document.getElementById('itemsContainer');
 
-        // In your item-adding code:
-addItemSelect.addEventListener('change', () => {
-    const value = addItemSelect.value;
-    if (value === 'none') return;
+        addItemSelect.addEventListener('change', () => {
+            const value = addItemSelect.value;
+            if (value === 'none') return;
 
-    // Check if item already added
-    if (document.getElementById(value)) {
-        alert('Item already added');
-        addItemSelect.value = 'none';
-        return;
-    }
+            // Check if item already added
+            if (document.getElementById(value)) {
+                alert('Item already added');
+                addItemSelect.value = 'none';
+                return;
+            }
 
-    const itemDiv = document.createElement('div');
-    itemDiv.className = 'item';
-    itemDiv.id = value;
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'item';
+            itemDiv.id = value;
 
-    const removeItemBtn = document.createElement('button');
-    removeItemBtn.className = 'remove-item';
-    removeItemBtn.textContent = 'X';
-    removeItemBtn.onclick = () => {
-        itemsContainer.removeChild(itemDiv);
-        addItemSelect.value = 'none';
-    };
+            const removeItemBtn = document.createElement('button');
+            removeItemBtn.className = 'remove-item';
+            removeItemBtn.textContent = 'X';
+            removeItemBtn.onclick = () => {
+                itemsContainer.removeChild(itemDiv);
+                addItemSelect.value = 'none';
+            };
 
-    itemDiv.appendChild(removeItemBtn);
+            itemDiv.appendChild(removeItemBtn);
 
-    const title = document.createElement('h3');
-    title.textContent = value.replace(/_/g, ' ');
-    itemDiv.appendChild(title);
+            const title = document.createElement('h3');
+            title.textContent = value.replace(/_/g, ' ');
+            itemDiv.appendChild(title);
 
-    // Set frame count
-    let frameCount = 5;
-    if (value === "totem_of_undying") frameCount = 10;
-    for (let i = 1; i <= frameCount; i++) {
-        const frameDiv = document.createElement('div');
-        frameDiv.className = 'frame';
+            // Set frame count
+            let frameCount = 5;
+            if (value === "totem_of_undying") frameCount = 10;
+            for (let i = 1; i <= frameCount; i++) {
+                const frameDiv = document.createElement('div');
+                frameDiv.className = 'frame';
 
-        const label = document.createElement('label');
-        label.textContent = `Add Frame ${i}: `;
-        label.htmlFor = `${value}_frame_${i}`;
+                const label = document.createElement('label');
+                label.textContent = `Add Frame ${i}: `;
+                label.htmlFor = `${value}_frame_${i}`;
 
-        const inputFile = document.createElement('input');
-        inputFile.type = 'file';
-        inputFile.accept = 'image/*';
-        inputFile.id = `${value}_frame_${i}`;
+                const inputFile = document.createElement('input');
+                inputFile.type = 'file';
+                inputFile.accept = 'image/*';
+                inputFile.id = `${value}_frame_${i}`;
 
-        const removeFrameBtn = document.createElement('button');
-        removeFrameBtn.className = 'remove-frame';
-        removeFrameBtn.textContent = 'Remove';
-        removeFrameBtn.onclick = () => {
-            frameDiv.remove();
-        };
+                const removeFrameBtn = document.createElement('button');
+                removeFrameBtn.className = 'remove-frame';
+                removeFrameBtn.textContent = 'Remove';
+                removeFrameBtn.onclick = () => {
+                    frameDiv.remove();
+                };
 
-        frameDiv.appendChild(label);
-        frameDiv.appendChild(inputFile);
-        frameDiv.appendChild(removeFrameBtn);
+                frameDiv.appendChild(label);
+                frameDiv.appendChild(inputFile);
+                frameDiv.appendChild(removeFrameBtn);
 
-        itemDiv.appendChild(frameDiv);
-    }
+                itemDiv.appendChild(frameDiv);
+            }
 
-    itemsContainer.appendChild(itemDiv);
-    addItemSelect.value = 'none';
-});
+            itemsContainer.appendChild(itemDiv);
+            addItemSelect.value = 'none';
+        });
 
-        // Download button placeholder (implement zip/download logic as needed)
-        document.getElementById('downloadBtn').onclick = () => {
-            alert('Download functionality not implemented in this demo.');
-        };
-
-    function generateUUID() {
-        return crypto.randomUUID();
-    }
-
-    function createManifest(packName) {
-        const headerUUID = generateUUID();
-        const moduleUUID = generateUUID();
-        return JSON.stringify({
-            "format_version": 2,
-            "header": {
-                "name": packName || "Origin optimal animated items",
-                "description": "Generated using Origin Optimal animated items",
-                "version": [1, 0, 0],
-                "uuid": headerUUID,
-                "min_engine_version": [1, 13, 0],
-                "pack_scope": "global"
-            },
-            "modules": [
-                {
-                    "type": "resources",
-                    "version": [1, 0, 0],
-                    "uuid": moduleUUID
-                }
-            ]
-        }, null, 2);
-    }
-
-    function getFrameFilename(itemId, frameNumber) {
-        switch(itemId) {
-            case 'netherite_sword':    return `ns${frameNumber}.png`;
-            case 'totem_of_undying':   return `totem${frameNumber}.png`;
-            case 'diamond_sword':      return `ds${frameNumber}.png`;
-            case 'golden_apple':       return `ga${frameNumber}.png`;
-            case 'netherite_axe':      return `na${frameNumber}.png`;
-            default:                   return `frame${frameNumber}.png`;
-        }
-    }
-
-         document.getElementById('downloadBtn').onclick = async () => {
-    const zip = new JSZip();
-    const packName = document.getElementById('packName').value;
-    const fileName = (packName ? packName : 'origin_optimal_animated_items') + '.mcpack.zip';
-
-    // Add manifest
-    zip.file("manifest.json", createManifest(packName));
-
-    // Add pack icon
-    const iconFile = document.getElementById('packIcon').files[0];
-    if (iconFile) {
-        zip.file("pack_icon.png", iconFile);
-    }
-
-    // Prepare attachables folder
-    const attachablesFolder = zip.folder('attachables');
-
-    // Process items
-    const items = document.getElementsByClassName('item');
-    for (const item of items) {
-        const itemId = item.id;
-        const frames = item.getElementsByClassName('frame');
-
-        // Add attachable JSON if available
-        const jsonContent = await fetchAttachableJson(itemId);
-        if (jsonContent) {
-            attachablesFolder.file(`${itemId}.json`, jsonContent);
-        }
-
-        for (let i = 0; i < frames.length; i++) {
-            const frameInput = frames[i].querySelector('input[type="file"]');
-            if (frameInput.files.length > 0) {
-                const frameFile = frameInput.files[0];
-                const frameNumber = i + 1;
-                const frameFilename = getFrameFilename(itemId, frameNumber);
-                const filePath = `textures/items/${itemId}/${frameFilename}`;
-                zip.file(filePath, frameFile);
+        function generateUUID() {
+            if (window.crypto && window.crypto.randomUUID) {
+                return crypto.randomUUID();
+            } else {
+                // Fallback for browsers without crypto.randomUUID
+                // (Not cryptographically secure, but fine for this use)
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
             }
         }
-    }
 
-    // Generate ZIP
-    const content = await zip.generateAsync({type: "blob"});
-    saveAs(content, fileName);
-};
+        function createManifest(packName) {
+            const headerUUID = generateUUID();
+            const moduleUUID = generateUUID();
+            return JSON.stringify({
+                "format_version": 2,
+                "header": {
+                    "name": packName || "Origin optimal animated items",
+                    "description": "Generated using Origin Optimal animated items",
+                    "version": [1, 0, 0],
+                    "uuid": headerUUID,
+                    "min_engine_version": [1, 13, 0],
+                    "pack_scope": "global"
+                },
+                "modules": [
+                    {
+                        "type": "resources",
+                        "version": [1, 0, 0],
+                        "uuid": moduleUUID
+                    }
+                ]
+            }, null, 2);
+        }
 
-</script>
+        function getFrameFilename(itemId, frameNumber) {
+            switch(itemId) {
+                case 'netherite_sword':    return `ns${frameNumber}.png`;
+                case 'totem_of_undying':   return `totem${frameNumber}.png`;
+                case 'diamond_sword':      return `ds${frameNumber}.png`;
+                case 'golden_apple':       return `ga${frameNumber}.png`;
+                case 'netherite_axe':      return `na${frameNumber}.png`;
+                default:                   return `frame${frameNumber}.png`;
+            }
+        }
 
+        async function fetchAttachableJson(itemId) {
+            try {
+                const response = await fetch(`${itemId}.json`);
+                if (!response.ok) throw new Error('Not found');
+                return await response.text();
+            } catch (e) {
+                return null; // If file doesn't exist, skip
+            }
+        }
 
+        document.getElementById('downloadBtn').onclick = async () => {
+            const zip = new JSZip();
+            const packName = document.getElementById('packName').value;
+            const fileName = (packName ? packName : 'origin_optimal_animated_items') + '.mcpack.zip';
+
+            // Add manifest
+            zip.file("manifest.json", createManifest(packName));
+
+            // Add pack icon
+            const iconFile = document.getElementById('packIcon').files[0];
+            if (iconFile) {
+                zip.file("pack_icon.png", iconFile);
+            }
+
+            // Prepare attachables folder
+            const attachablesFolder = zip.folder('attachables');
+
+            // Process items
+            const items = document.getElementsByClassName('item');
+            for (const item of items) {
+                const itemId = item.id;
+                const frames = item.getElementsByClassName('frame');
+
+                // Add attachable JSON if available
+                const jsonContent = await fetchAttachableJson(itemId);
+                if (jsonContent) {
+                    attachablesFolder.file(`${itemId}.json`, jsonContent);
+                }
+
+                for (let i = 0; i < frames.length; i++) {
+                    const frameInput = frames[i].querySelector('input[type="file"]');
+                    if (frameInput.files.length > 0) {
+                        const frameFile = frameInput.files[0];
+                        const frameNumber = i + 1;
+                        const frameFilename = getFrameFilename(itemId, frameNumber);
+                        const filePath = `textures/items/${itemId}/${frameFilename}`;
+                        zip.file(filePath, frameFile);
+                    }
+                }
+            }
+
+            // Generate ZIP
+            const content = await zip.generateAsync({type: "blob"});
+            saveAs(content, fileName);
+        };
+    </script>
 </body>
 </html>
