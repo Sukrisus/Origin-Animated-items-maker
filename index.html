@@ -132,7 +132,6 @@
             const value = addItemSelect.value;
             if (value === 'none') return;
 
-            // Check if item already added
             if (document.getElementById(value)) {
                 alert('Item already added');
                 addItemSelect.value = 'none';
@@ -157,9 +156,8 @@
             title.textContent = value.replace(/_/g, ' ');
             itemDiv.appendChild(title);
 
-            // Set frame count
-            let frameCount = 5;
-            if (value === "totem_of_undying") frameCount = 10;
+            // All items now have 10 frames
+            let frameCount = 10;
             for (let i = 1; i <= frameCount; i++) {
                 const frameDiv = document.createElement('div');
                 frameDiv.className = 'frame';
@@ -196,7 +194,6 @@
                 return crypto.randomUUID();
             } else {
                 // Fallback for browsers without crypto.randomUUID
-                // (Not cryptographically secure, but fine for this use)
                 return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                     var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
                     return v.toString(16);
@@ -238,9 +235,9 @@
             }
         }
 
-        async function fetchAttachableJson(itemId) {
+        async function fetchAttachableJson(filename) {
             try {
-                const response = await fetch(`${itemId}.json`);
+                const response = await fetch(filename);
                 if (!response.ok) throw new Error('Not found');
                 return await response.text();
             } catch (e) {
@@ -271,10 +268,19 @@
                 const itemId = item.id;
                 const frames = item.getElementsByClassName('frame');
 
-                // Add attachable JSON if available
-                const jsonContent = await fetchAttachableJson(itemId);
-                if (jsonContent) {
-                    attachablesFolder.file(`${itemId}.json`, jsonContent);
+                // For totem_of_undying, add both right_totem.json and left_totem.json
+                if (itemId === "totem_of_undying") {
+                    const rightJson = await fetchAttachableJson("right_totem.json");
+                    if (rightJson) attachablesFolder.file("right_totem.json", rightJson);
+
+                    const leftJson = await fetchAttachableJson("left_totem.json");
+                    if (leftJson) attachablesFolder.file("left_totem.json", leftJson);
+                } else {
+                    // For other items, add [itemId].json if available
+                    const jsonContent = await fetchAttachableJson(`${itemId}.json`);
+                    if (jsonContent) {
+                        attachablesFolder.file(`${itemId}.json`, jsonContent);
+                    }
                 }
 
                 for (let i = 0; i < frames.length; i++) {
