@@ -131,67 +131,69 @@
         const addItemSelect = document.getElementById('addItem');
         const itemsContainer = document.getElementById('itemsContainer');
 
-        addItemSelect.addEventListener('change', () => {
-            const value = addItemSelect.value;
-            if (value === 'none') return;
+        // In your item-adding code:
+addItemSelect.addEventListener('change', () => {
+    const value = addItemSelect.value;
+    if (value === 'none') return;
 
-            // Check if item already added
-            if (document.getElementById(value)) {
-                alert('Item already added');
-                addItemSelect.value = 'none';
-                return;
-            }
+    // Check if item already added
+    if (document.getElementById(value)) {
+        alert('Item already added');
+        addItemSelect.value = 'none';
+        return;
+    }
 
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'item';
-            itemDiv.id = value;
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'item';
+    itemDiv.id = value;
 
-            const removeItemBtn = document.createElement('button');
-            removeItemBtn.className = 'remove-item';
-            removeItemBtn.textContent = 'X';
-            removeItemBtn.onclick = () => {
-                itemsContainer.removeChild(itemDiv);
-                addItemSelect.value = 'none';
-            };
+    const removeItemBtn = document.createElement('button');
+    removeItemBtn.className = 'remove-item';
+    removeItemBtn.textContent = 'X';
+    removeItemBtn.onclick = () => {
+        itemsContainer.removeChild(itemDiv);
+        addItemSelect.value = 'none';
+    };
 
-            itemDiv.appendChild(removeItemBtn);
+    itemDiv.appendChild(removeItemBtn);
 
-            const title = document.createElement('h3');
-            title.textContent = value.replace(/_/g, ' ');
-            itemDiv.appendChild(title);
+    const title = document.createElement('h3');
+    title.textContent = value.replace(/_/g, ' ');
+    itemDiv.appendChild(title);
 
-            let frameCount = 5;
-if (value === "totem_of_undying") frameCount = 10;
-for (let i = 1; i <= frameCount; i++) {
-                const frameDiv = document.createElement('div');
-                frameDiv.className = 'frame';
+    // Set frame count
+    let frameCount = 5;
+    if (value === "totem_of_undying") frameCount = 10;
+    for (let i = 1; i <= frameCount; i++) {
+        const frameDiv = document.createElement('div');
+        frameDiv.className = 'frame';
 
-                const label = document.createElement('label');
-                label.textContent = `Add Frame ${i}: `;
-                label.htmlFor = `${value}_frame_${i}`;
+        const label = document.createElement('label');
+        label.textContent = `Add Frame ${i}: `;
+        label.htmlFor = `${value}_frame_${i}`;
 
-                const inputFile = document.createElement('input');
-                inputFile.type = 'file';
-                inputFile.accept = 'image/*';
-                inputFile.id = `${value}_frame_${i}`;
+        const inputFile = document.createElement('input');
+        inputFile.type = 'file';
+        inputFile.accept = 'image/*';
+        inputFile.id = `${value}_frame_${i}`;
 
-                const removeFrameBtn = document.createElement('button');
-                removeFrameBtn.className = 'remove-frame';
-                removeFrameBtn.textContent = 'Remove';
-                removeFrameBtn.onclick = () => {
-                    frameDiv.remove();
-                };
+        const removeFrameBtn = document.createElement('button');
+        removeFrameBtn.className = 'remove-frame';
+        removeFrameBtn.textContent = 'Remove';
+        removeFrameBtn.onclick = () => {
+            frameDiv.remove();
+        };
 
-                frameDiv.appendChild(label);
-                frameDiv.appendChild(inputFile);
-                frameDiv.appendChild(removeFrameBtn);
+        frameDiv.appendChild(label);
+        frameDiv.appendChild(inputFile);
+        frameDiv.appendChild(removeFrameBtn);
 
-                itemDiv.appendChild(frameDiv);
-            }
+        itemDiv.appendChild(frameDiv);
+    }
 
-            itemsContainer.appendChild(itemDiv);
-            addItemSelect.value = 'none';
-        });
+    itemsContainer.appendChild(itemDiv);
+    addItemSelect.value = 'none';
+});
 
         // Download button placeholder (implement zip/download logic as needed)
         document.getElementById('downloadBtn').onclick = () => {
