@@ -238,42 +238,52 @@ addItemSelect.addEventListener('change', () => {
         }
     }
 
-    document.getElementById('downloadBtn').onclick = async () => {
-        const zip = new JSZip();
-        const packName = document.getElementById('packName').value;
-        const fileName = (packName ? packName : 'origin_optimal_animated_items') + '.mcpack.zip';
+         document.getElementById('downloadBtn').onclick = async () => {
+    const zip = new JSZip();
+    const packName = document.getElementById('packName').value;
+    const fileName = (packName ? packName : 'origin_optimal_animated_items') + '.mcpack.zip';
 
-        // Add manifest
-        zip.file("manifest.json", createManifest(packName));
+    // Add manifest
+    zip.file("manifest.json", createManifest(packName));
 
-        // Add pack icon
-        const iconFile = document.getElementById('packIcon').files[0];
-        if (iconFile) {
-            zip.file("pack_icon.png", iconFile);
+    // Add pack icon
+    const iconFile = document.getElementById('packIcon').files[0];
+    if (iconFile) {
+        zip.file("pack_icon.png", iconFile);
+    }
+
+    // Prepare attachables folder
+    const attachablesFolder = zip.folder('attachables');
+
+    // Process items
+    const items = document.getElementsByClassName('item');
+    for (const item of items) {
+        const itemId = item.id;
+        const frames = item.getElementsByClassName('frame');
+
+        // Add attachable JSON if available
+        const jsonContent = await fetchAttachableJson(itemId);
+        if (jsonContent) {
+            attachablesFolder.file(`${itemId}.json`, jsonContent);
         }
 
-        // Process items
-        const items = document.getElementsByClassName('item');
-        for (const item of items) {
-            const itemId = item.id;
-            const frames = item.getElementsByClassName('frame');
-
-            for (let i = 0; i < frames.length; i++) {
-                const frameInput = frames[i].querySelector('input[type="file"]');
-                if (frameInput.files.length > 0) {
-                    const frameFile = frameInput.files[0];
-                    const frameNumber = i + 1;
-                    const frameFilename = getFrameFilename(itemId, frameNumber);
-                    const filePath = `textures/items/${itemId}/${frameFilename}`;
-                    zip.file(filePath, frameFile);
-                }
+        for (let i = 0; i < frames.length; i++) {
+            const frameInput = frames[i].querySelector('input[type="file"]');
+            if (frameInput.files.length > 0) {
+                const frameFile = frameInput.files[0];
+                const frameNumber = i + 1;
+                const frameFilename = getFrameFilename(itemId, frameNumber);
+                const filePath = `textures/items/${itemId}/${frameFilename}`;
+                zip.file(filePath, frameFile);
             }
         }
+    }
 
-        // Generate ZIP
-        const content = await zip.generateAsync({type: "blob"});
-        saveAs(content, fileName);
-    };
+    // Generate ZIP
+    const content = await zip.generateAsync({type: "blob"});
+    saveAs(content, fileName);
+};
+
 </script>
 
 
