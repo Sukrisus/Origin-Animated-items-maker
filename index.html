@@ -192,16 +192,14 @@
         document.getElementById('downloadBtn').onclick = () => {
             alert('Download functionality not implemented in this demo.');
         };
-    // Generate UUID
+
     function generateUUID() {
         return crypto.randomUUID();
     }
 
-    // Create manifest content
     function createManifest(packName) {
         const headerUUID = generateUUID();
         const moduleUUID = generateUUID();
-        
         return JSON.stringify({
             "format_version": 2,
             "header": {
@@ -222,7 +220,17 @@
         }, null, 2);
     }
 
-    // Download functionality
+    // Helper to get frame filename
+    function getFrameFilename(itemId, frameNumber) {
+        if (itemId === 'netherite_sword') {
+            return `ns${frameNumber}`;
+        } else if (itemId === 'totem_of_undying') {
+            return `totem${frameNumber}`;
+        }
+        // fallback, should not happen
+        return `frame${frameNumber}`;
+    }
+
     document.getElementById('downloadBtn').onclick = async () => {
         const zip = new JSZip();
         const packName = document.getElementById('packName').value;
@@ -248,7 +256,8 @@
                 if (frameInput.files.length > 0) {
                     const frameFile = frameInput.files[0];
                     const frameNumber = i + 1;
-                    const filePath = `textures/items/${itemId}/frame_${frameNumber}.png`;
+                    const frameFilename = getFrameFilename(itemId, frameNumber);
+                    const filePath = `textures/items/${itemId}/${frameFilename}`;
                     zip.file(filePath, frameFile);
                 }
             }
@@ -259,5 +268,6 @@
         saveAs(content, fileName);
     };
 </script>
+
 </body>
 </html>
