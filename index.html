@@ -469,7 +469,7 @@ ChatGPT can make mistakes. Check important info. See Cookie
                     const frames = item.querySelectorAll('.frame-preview');
                     
                     // Create item texture structure
-                    const texturesFolder = zip.folder(`assets/minecraft/textures/${itemId}`);
+                    const texturesFolder = zip.folder(`/textures/${itemId}`);
                     
                     frames.forEach((frame, index) => {
                         if (frame.dataset.imgData) {
