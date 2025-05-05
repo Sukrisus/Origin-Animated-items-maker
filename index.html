@@ -5,113 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <title>Minecraft Bedrock Pack Creator</title>
+    <title>Origin Optimal Animated Items Generator</title>
     <style>
         body {
-            background-color: #000;
-            color: #fff;
-            font-family: Arial, sans-serif;
+            background: #111;
+            color: #f8f8f8;
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 540px;
+            margin: 40px auto 0 auto;
+            padding: 32px 24px 24px 24px;
+            background: #181818;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+        }
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            margin-top: 0;
+            margin-bottom: 28px;
+            color: #fff;
         }
         label {
             display: block;
-            margin-top: 20px;
-            font-weight: bold;
+            margin-top: 18px;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #eaeaea;
+            letter-spacing: 0.01em;
         }
-        input[type=text], select {
+        input[type="text"] {
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            background-color: #222;
-            border: 1px solid #555;
-            color: #fff;
-            border-radius: 5px;
+            padding: 12px 14px;
+            background: #232323;
+            border: 1.5px solid #444;
+            border-radius: 7px;
+            color: #f8f8f8;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            transition: border .2s;
         }
-        input[type=file] {
-            margin-top: 5px;
-            color: #fff;
+        input[type="text"]:focus {
+            border-color: #fff;
+            outline: none;
         }
-        .container {
-            max-width: 600px;
-            margin: auto;
+        input[type="file"] {
+            background: #232323;
+            color: #fff;
+            border: none;
+            font-size: 1rem;
+        }
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            background: #232323;
+            color: #f8f8f8;
+            border: 1.5px solid #444;
+            border-radius: 7px;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            transition: border .2s;
+        }
+        select:focus {
+            border-color: #fff;
+            outline: none;
         }
         .item {
-            border: 1px solid #555;
-            padding: 10px;
-            margin-top: 20px;
-            border-radius: 5px;
+            border: 1.5px solid #333;
+            background: #191919;
+            padding: 16px 12px 12px 12px;
+            margin-top: 22px;
+            border-radius: 10px;
             position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         .remove-item {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #444;
+            top: 12px;
+            right: 12px;
+            background: #232323;
             border: none;
             color: #fff;
             font-weight: bold;
             cursor: pointer;
             border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            line-height: 25px;
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
             text-align: center;
+            font-size: 1.1rem;
+            transition: background .2s;
+        }
+        .remove-item:hover {
+            background: #e74c3c;
         }
         .frame {
-            margin-top: 10px;
+            margin-top: 13px;
             display: flex;
             align-items: center;
         }
-        .frame input[type=file] {
+        .frame label {
+            margin: 0 10px 0 0;
+            font-weight: 500;
+            font-size: 0.98rem;
+            color: #e0e0e0;
+        }
+        .frame input[type="file"] {
             flex-grow: 1;
         }
         .remove-frame {
-            background: #444;
+            background: #232323;
             border: none;
             color: #fff;
             font-weight: bold;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 6px;
             margin-left: 10px;
-            padding: 5px 10px;
+            padding: 6px 13px;
+            font-size: 0.97rem;
+            transition: background .2s;
+        }
+        .remove-frame:hover {
+            background: #e74c3c;
         }
         #downloadBtn {
-            margin-top: 30px;
+            margin-top: 32px;
             width: 100%;
-            padding: 15px;
+            padding: 16px 0;
             background-color: #fff;
-            color: #000;
+            color: #181818;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 1.13rem;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.09);
+            transition: background .2s, color .2s;
+        }
+        #downloadBtn:hover {
+            background: #191919;
+            color: #fff;
+            border: 1.5px solid #fff;
+        }
+        .footer {
+            width: 100%;
+            text-align: center;
+            margin-top: 36px;
+            margin-bottom: 12px;
+            color: #bdbdbd;
+            font-size: 0.98rem;
+            letter-spacing: 0.01em;
+        }
+        .footer strong {
+            color: #fff;
+            font-weight: 600;
         }
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
+            .container {
+                padding: 16px 5px 18px 5px;
+                margin-top: 16px;
             }
-            .frame {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .remove-frame {
-                margin-left: 0;
-                margin-top: 5px;
+            h1 {
+                font-size: 1.3rem;
+                margin-bottom: 18px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <label for="packName">Pack Name:</label>
+        <h1>Origin Optimal Animated Items Generator</h1>
+
+        <label for="packName">Pack Name</label>
         <input type="text" id="packName" name="packName" placeholder="Enter your pack name">
 
-        <label for="packIcon">Pack Icon:</label>
+        <label for="packIcon">Pack Icon</label>
         <input type="file" id="packIcon" name="packIcon" accept="image/*">
 
-        <label for="addItem">Add Your Item:</label>
+        <label for="addItem">Add Your Item</label>
         <select id="addItem" name="addItem">
             <option value="none">None</option>
             <option value="netherite_sword">Netherite Sword</option>
@@ -122,6 +201,11 @@
         </select>
         <div id="itemsContainer"></div>
         <button id="downloadBtn">Download</button>
+    </div>
+
+    <div class="footer">
+        <strong>Only works on Origin Client</strong><br>
+        ©origin client 2025 - all rights are reserved
     </div>
 
     <script>
@@ -144,7 +228,7 @@
 
             const removeItemBtn = document.createElement('button');
             removeItemBtn.className = 'remove-item';
-            removeItemBtn.textContent = 'X';
+            removeItemBtn.textContent = '×';
             removeItemBtn.onclick = () => {
                 itemsContainer.removeChild(itemDiv);
                 addItemSelect.value = 'none';
@@ -153,12 +237,14 @@
             itemDiv.appendChild(removeItemBtn);
 
             const title = document.createElement('h3');
+            title.style.margin = '0 0 8px 0';
+            title.style.fontWeight = '600';
+            title.style.fontSize = '1.09rem';
             title.textContent = value.replace(/_/g, ' ');
             itemDiv.appendChild(title);
 
-            // All items now have 10 frames
-            let frameCount = 10;
-            for (let i = 1; i <= frameCount; i++) {
+            // All items have 10 frames
+            for (let i = 1; i <= 10; i++) {
                 const frameDiv = document.createElement('div');
                 frameDiv.className = 'frame';
 
