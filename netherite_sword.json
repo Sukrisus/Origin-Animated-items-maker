@@ -37,7 +37,7 @@
             }
           ]
         },
-        "render_controllers": [ "controller.render.darkxx_animated_type_1" ]
+        "render_controllers": [ "controller.render.item_animated" ]
       }
     }
   }
