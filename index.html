@@ -401,7 +401,7 @@
                         const frameFile = frameInput.files[0];
                         const frameNumber = i + 1;
                         const frameFilename = getFrameFilename(itemId, frameNumber);
-                        const filePath = `textures/items/${itemId}/${frameFilename}`;
+                        const filePath = `textures/${itemId}/${frameFilename}`;
                         zip.file(filePath, frameFile);
                     }
                 }
