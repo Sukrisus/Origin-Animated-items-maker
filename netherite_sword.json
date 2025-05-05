@@ -13,6 +13,11 @@
           "item_frame_3": "textures/netherite_sword/ns3",
           "item_frame_4": "textures/netherite_sword/ns4",
           "item_frame_5": "textures/netherite_sword/ns5",
+          "item_frame_6": "textures/netherite_sword/ns6",
+          "item_frame_7": "textures/netherite_sword/ns7",
+          "item_frame_8": "textures/netherite_sword/ns8",
+          "item_frame_9": "textures/netherite_sword/ns9",
+          "item_frame_10": "textures/netherite_sword/ns10",
           "enchanted": "textures/misc/enchanted_item_glint"
         },
         "geometry": {
