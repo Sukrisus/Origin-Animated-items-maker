@@ -183,29 +183,29 @@
 <body>
     <div class="container">
         <h1>Origin Optimal Animated Items Generator</h1>
-<div style="text-align:center; margin-bottom: 18px;">
-  <button 
-    type="button"
-    style="
-      background: #fff;
-      color: #181818;
-      border: none;
-      border-radius: 7px;
-      font-size: 1rem;
-      font-weight: 600;
-      padding: 11px 20px;
-      margin-top: 8px;
-      margin-bottom: 2px;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-      transition: background .2s, color .2s;
-    "
-    onclick="window.open('cutter.html', '_blank')"
-  >
-    open spritesheet cutter
-  </button>
-  <h4>used to convert java animated textures to pe</h4>
-</div>
+        <div style="text-align:center; margin-bottom: 18px;">
+          <button 
+            type="button"
+            style="
+              background: #fff;
+              color: #181818;
+              border: none;
+              border-radius: 7px;
+              font-size: 1rem;
+              font-weight: 600;
+              padding: 11px 20px;
+              margin-top: 8px;
+              margin-bottom: 2px;
+              cursor: pointer;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+              transition: background .2s, color .2s;
+            "
+            onclick="window.open('cutter.html', '_blank')"
+          >
+            open spritesheet cutter
+          </button>
+          <h4>used to convert java animated textures to pe</h4>
+        </div>
         <label for="packName">Pack Name</label>
         <input type="text" id="packName" name="packName" placeholder="Enter your pack name">
 
@@ -268,6 +268,22 @@
             title.style.fontSize = '1.09rem';
             title.textContent = value.replace(/_/g, ' ');
             itemDiv.appendChild(title);
+
+            // Attachable JSON upload
+            const attachableDiv = document.createElement('div');
+            attachableDiv.style.marginBottom = '10px';
+            const attachableLabel = document.createElement('label');
+            attachableLabel.textContent = 'Attachable JSON: ';
+            attachableLabel.htmlFor = `${value}_attachable`;
+            attachableDiv.appendChild(attachableLabel);
+
+            const attachableInput = document.createElement('input');
+            attachableInput.type = 'file';
+            attachableInput.accept = 'application/json';
+            attachableInput.id = `${value}_attachable`;
+            attachableDiv.appendChild(attachableInput);
+
+            itemDiv.appendChild(attachableDiv);
 
             // All items have 10 frames
             for (let i = 1; i <= 10; i++) {
@@ -347,16 +363,6 @@
             }
         }
 
-        async function fetchAttachableJson(filename) {
-            try {
-                const response = await fetch(filename);
-                if (!response.ok) throw new Error('Not found');
-                return await response.text();
-            } catch (e) {
-                return null; // If file doesn't exist, skip
-            }
-        }
-
         document.getElementById('downloadBtn').onclick = async () => {
             const zip = new JSZip();
             const packName = document.getElementById('packName').value;
@@ -380,19 +386,11 @@
                 const itemId = item.id;
                 const frames = item.getElementsByClassName('frame');
 
-                // For totem_of_undying, add both right_totem.json and left_totem.json
-                if (itemId === "totem_of_undying") {
-                    const rightJson = await fetchAttachableJson("right_totem.json");
-                    if (rightJson) attachablesFolder.file("right_totem.json", rightJson);
-
-                    const leftJson = await fetchAttachableJson("left_totem.json");
-                    if (leftJson) attachablesFolder.file("left_totem.json", leftJson);
-                } else {
-                    // For other items, add [itemId].json if available
-                    const jsonContent = await fetchAttachableJson(`${itemId}.json`);
-                    if (jsonContent) {
-                        attachablesFolder.file(`${itemId}.json`, jsonContent);
-                    }
+                // Add attachable JSON if uploaded
+                const attachableInput = item.querySelector(`input[type="file"][id$="_attachable"]`);
+                if (attachableInput && attachableInput.files.length > 0) {
+                    const attachableFile = attachableInput.files[0];
+                    attachablesFolder.file(`${itemId}.json`, attachableFile);
                 }
 
                 for (let i = 0; i < frames.length; i++) {
