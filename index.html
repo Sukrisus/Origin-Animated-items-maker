@@ -408,18 +408,26 @@
                         const frameNumber = i + 1;
                         const frameFilename = getFrameFilename(itemId, frameNumber);
                         const filePath = `textures/${itemId}/${frameFilename}`;
-                        filePromises.push(
-                            new Promise((resolve, reject) => {
-                                // Read the file as ArrayBuffer, then add to zip
-                                const reader = new FileReader();
-                                reader.onload = function(e) {
-                                    zip.file(filePath, e.target.result);
-                                    resolve();
-                                };
-                                reader.onerror = reject;
-                                reader.readAsArrayBuffer(frameFile);
-                            })
-                        );
+                        // Inside the frame processing loop, modify the Promise block:
+filePromises.push(
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            zip.file(filePath, e.target.result);
+            
+            // Add first frame to textures/items
+            if (i === 0) { // First frame index
+                const itemTexturePath = `textures/items/${itemId}.png`;
+                zip.file(itemTexturePath, e.target.result);
+            }
+            
+            resolve();
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(frameFile);
+    })
+);
+
                     }
                 }
             }
