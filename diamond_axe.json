@@ -25,7 +25,7 @@
       },
       "animations": {
         "vision1": "animation.item_animated_false.vision1",
-        "vision2": "animation.item_animated_false.vision2"
+        "vision2": "animation.item_animated_false.vision3"
       },
       "scripts": {
         "animate": [
